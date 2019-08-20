@@ -9,11 +9,14 @@ var Config = {};
 Config = require('./config.json');
 
 // Log in
+console.log('Connection...');
 bot.login(Config.login);
 module.exports = bot;
 
 // Import commands
 const Off = require('./commands/off.js');
+const Help = require('./commands/help.js');
+const Clear = require('./commands/clear.js');
 
 var Phoenix = {}
 Phoenix.bot = bot;
@@ -21,6 +24,9 @@ Phoenix.config = Config;
 
 bot.on('ready', () => {
     console.log('Phoenix bot ready to operate');
+    bot.user.setActivity('être codé par GabRay').catch((e) => console.error(e))
+    bot.user.setUsername(Config.name)
+
     // Find the default guild and test Channel
     Phoenix.guild = bot.guilds.find(guild => guild.id == Config.defaultGuild);
     Phoenix.testChannel = Phoenix.guild.channels.find(chan => chan.id == Config.testChannel);
@@ -47,6 +53,22 @@ function ReadCommand(command, args, msg) {
         }
         msg.delete()
         .then(Command.Off.shutdown(Phoenix));
+    }
+    
+    if(Command.Help.match(command)) {
+        if(!Command.Help.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Help.show(msg.channel);
+    }
+
+    if(Command.Clear.match(command)) {
+        if(!Command.Clear.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Clear.clear(msg.channel, Phoenix);
     }
 }
 
