@@ -22,6 +22,8 @@ const Off = require('./commands/off.js');
 const Help = require('./commands/help.js');
 const Clear = require('./commands/clear.js');
 const Play = require('./commands/play.js');
+require('./commands/skip.js');
+require('./commands/stop.js');
 
 var Phoenix = {}
 Phoenix.bot = bot;
@@ -88,6 +90,14 @@ function ReadCommand(command, args, msg) {
             return;
         }
         Command.Play.play(msg, args, Phoenix);
+    }
+
+    if(Command.Skip.match(command)) {
+        if(!Command.Skip.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Skip.skip(msg, args, Phoenix);
     }
 }
 

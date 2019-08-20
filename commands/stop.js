@@ -1,10 +1,10 @@
 Command = require('./command.js');
+require('./play.js');
 
-Command.Help = {
-    name: "help",
+Command.Stop = {
+    name: "stop",
     alias: [
-        "help",
-        "h"
+        "stop"
     ],
     groupOption: {
         whitelist: [],
@@ -14,7 +14,7 @@ Command.Help = {
         whitelist: [],
         blacklist: []
     },
-    description: "Affiche la liste des commandes",
+    description: "Arrete la musique et deconnecte le bot du salon vocal.",
 
 
     match: function(command) {
@@ -39,20 +39,7 @@ Command.Help = {
     
         return true;
     },
-
-    show: function(channel) {
-        let text = "Commandes : \n"+
-            "\nhelp: " + Command.Help.description +
-            "\noff: " +  Command.Off.description +
-            "\nclear: " + Command.Clear.description +
-            "\nplay [nom/url]: " + Command.Play.description +
-            "\nskip: " + Command.Skip.description +
-            "\nstop: " + Command.Stop.description +
-            "";
-        
-        channel.send(text, {
-            code: true
-        })
-        .catch(console.error);
+    stop: function() {
+        Command.Play.stop();
     }
 }

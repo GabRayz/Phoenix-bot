@@ -1,20 +1,21 @@
 Command = require('./command.js');
+require('./play.js');
 
-Command.Help = {
-    name: "help",
+Command.Skip = {
+    name: "skip",
     alias: [
-        "help",
-        "h"
+        "skip",
+        "next"
     ],
     groupOption: {
-        whitelist: [],
+        whitelist: ["Roi"],
         blacklist: []
     },
     channelOption: {
         whitelist: [],
         blacklist: []
     },
-    description: "Affiche la liste des commandes",
+    description: "Passer à la prochaine musique de la file d'attente",
 
 
     match: function(command) {
@@ -39,20 +40,7 @@ Command.Help = {
     
         return true;
     },
-
-    show: function(channel) {
-        let text = "Commandes : \n"+
-            "\nhelp: " + Command.Help.description +
-            "\noff: " +  Command.Off.description +
-            "\nclear: " + Command.Clear.description +
-            "\nplay [nom/url]: " + Command.Play.description +
-            "\nskip: " + Command.Skip.description +
-            "\nstop: " + Command.Stop.description +
-            "";
-        
-        channel.send(text, {
-            code: true
-        })
-        .catch(console.error);
+    skip: function() {
+        Command.Play.skip();
     }
 }

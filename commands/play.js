@@ -16,7 +16,7 @@ Command.Play = {
         whitelist: [],
         blacklist: []
     },
-    description: "Joue une musique",
+    description: "Ajoute une musique à la file d'attente. Démarre la lecture si aucune musique n'est en cours.",
 
 
     match: function(command) {
@@ -42,6 +42,8 @@ Command.Play = {
         return true;
     },
     queue: [],
+    isPlaying: false,
+
     play: async function(msg, args, Phoenix) {
         this.Phoenix = Phoenix;
         console.log("connecting to voice channel");
@@ -49,19 +51,14 @@ Command.Play = {
         this.voiceConnection = await this.connectToVoiceChannel(msg.member.voiceChannel);
         if(!this.voiceConnection) return;
         this.queue.push(args);
+        this.textChannel.send('Musique ajoutée à la file d\'attente.');
 
-        this.nextSong();
-
-        // Get the stream
-        // let stream;
-        // if(args[0].startsWith("http")) {
-        //     stream = this.getStream(args[0])
-        // }else {
-        //     url = await this.getUrlFromName(args[0], Phoenix)
-        //     stream = this.getStream(url);
-        // }
+        if (!this.isPlaying) {
+            this.nextSong();
+        }
     },
     async nextSong() {
+        if(!this.queue.length > 0) return;
         // Get the stream
         let song = this.queue.shift()[0];
         if (song.startsWith("http")) {
@@ -71,10 +68,34 @@ Command.Play = {
             this.stream = this.getStream(url);
         }
 
+        this.stream.on('error', (err) => {
+            console.log("Erreur lors de la lecture :");
+            console.error(err);
+            this.voiceHandler.end();
+        })
+        this.stream.on('end', (reason) => {
+            console.log('End of soung');
+            if(!this.isPlaying) return;
+
+            this.voiceHandler = null;
+            if(this.queue.length > 0) {
+                this.nextSong()
+            }else {
+                this.isPlaying = false;
+                return;
+            }
+        })
+
         this.voiceHandler = this.voiceConnection.playStream(this.stream);
+        this.isPlaying = true;
+    },
+    skip() {
+        console.log('Skip soung');
+        this.stream.end();
     },
     getStream(url) {
         console.log('Get stream from url : ' + url);
+        this.textChannel.send("Musique en cours : " + url);
         return youtube(url);
     },
     getUrlFromName(name, Phoenix) {
@@ -102,5 +123,9 @@ Command.Play = {
             })
             .catch(console.error);
         })
+    },
+    stop: function() {
+        this.isPlaying = false;
+        this.stream.end();
     }
 }
