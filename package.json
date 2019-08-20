@@ -18,6 +18,7 @@
   "homepage": "https://github.com/GabRayz/Phoenix-bot2#readme",
   "dependencies": {
     "debug": "^3.1.0",
+    "discord.js": "^11.5.1",
     "express": "^4.17.1",
     "help": "^3.0.2",
     "mime": "^2.0.3",

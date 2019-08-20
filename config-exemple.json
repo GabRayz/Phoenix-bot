@@ -1,0 +1,9 @@
+{
+	"login" : "BotLogin",
+	"name" : "botName",
+	"prefix" : "!",
+	"connectionAlert" : "false",
+	"defaultGuild" : "Name of the guild",
+	"everyoneBlackListed" : "true",
+	"key" : "youtube api key"
+}
