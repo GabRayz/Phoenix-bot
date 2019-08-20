@@ -9,7 +9,7 @@ Command.Play = {
         "play"
     ],
     groupOption: {
-        whitelist: ["Roi"],
+        whitelist: [],
         blacklist: []
     },
     channelOption: {

@@ -8,7 +8,7 @@ Command.Skip = {
         "next"
     ],
     groupOption: {
-        whitelist: ["Roi"],
+        whitelist: [],
         blacklist: []
     },
     channelOption: {
