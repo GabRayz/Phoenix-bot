@@ -1,5 +1,9 @@
 // Import packages
 const Discord = require('discord.js');
+const ytdl = require('ytdl-core');
+const {google} = require('googleapis');
+var OAuth2 = google.auth.OAuth2;
+const request = require('request');
 
 // Create bot client
 const bot = new Discord.Client();
@@ -17,6 +21,7 @@ module.exports = bot;
 const Off = require('./commands/off.js');
 const Help = require('./commands/help.js');
 const Clear = require('./commands/clear.js');
+const Play = require('./commands/play.js');
 
 var Phoenix = {}
 Phoenix.bot = bot;
@@ -31,7 +36,13 @@ bot.on('ready', () => {
     Phoenix.guild = bot.guilds.find(guild => guild.id == Config.defaultGuild);
     Phoenix.testChannel = Phoenix.guild.channels.find(chan => chan.id == Config.testChannel);
 
-    Phoenix.testChannel.send("Phoenix connecté");
+    if (Config.connectionAlert == true) {
+        Phoenix.testChannel.send("Phoenix connecté");
+    }
+
+    // GET https://www.googleapis.com/youtube/v3/search?part=snippet&q=Frozen&key={YOUR_API_KEY}
+
+    
 });
 
 bot.on('message', (msg) => {
@@ -69,6 +80,14 @@ function ReadCommand(command, args, msg) {
             return;
         }
         Command.Clear.clear(msg.channel, Phoenix);
+    }
+
+    if(Command.Play.match(command)) {
+        if(!Command.Play.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Play.play(msg, args, Phoenix);
     }
 }
 
