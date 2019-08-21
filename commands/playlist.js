@@ -124,5 +124,7 @@ Command.Playlist = {
         }
         Command.Play.currentPlaylist = playlist;
         console.log('Playing playlist: ' + playlistName);
+
+        Command.Play.start();
     }
 }

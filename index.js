@@ -63,7 +63,7 @@ bot.on('message', (msg) => {
         console.log(msg.author.username + ' : ' + msg.content);
         let msgParts = msg.content.split(' ');
         setTimeout(() => {
-            if(!message.deleted)
+            if(!msg.deleted)
                 msg.delete();
         }, 20000);
         ReadCommand(msgParts[0].slice(1), msgParts.slice(1), msg);
