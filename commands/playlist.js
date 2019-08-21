@@ -126,5 +126,16 @@ Command.Playlist = {
         console.log('Playing playlist: ' + playlistName);
 
         Command.Play.start(this.Phoenix, msg);
+    },
+    delete(playlistName) {
+        fs.unlink("playlists/" + playlistName + ".json", (err) => {
+            if (err) {
+                console.error(err);
+                this.Phoenix.sendClean("Je n'ai pas trouvé cette playlist", this.textChannel, 5000);
+            }else {
+                console.log('Deleted playlist: ' + playlistName);
+                this.Phoenix.sendClean("Playlist supprimée.", this.textChannel, 15000);
+            }
+        })
     }
 }
