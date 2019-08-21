@@ -16,7 +16,7 @@ Command.Playlist = {
         whitelist: [],
         blacklist: []
     },
-    description: "Jouer une playlist",
+    description: "Gérer les playlist. !playlist help",
 
 
     match: function(command) {
@@ -60,6 +60,9 @@ Command.Playlist = {
             case "delete":
                 if (args.length > 1) this.delete(args[1]);
                 break;
+            case "help":
+                this.showHelp();
+                break
             default:
                 return;
         }
@@ -140,5 +143,15 @@ Command.Playlist = {
                 this.Phoenix.sendClean("Playlist supprimée.", this.textChannel, 15000);
             }
         })
+    },
+    showHelp() {
+        let msg = "Gestion de playlist : " +
+            "\n" + this.Phoenix.config.prefix + "playlist list: Liste toutes les playlist" + 
+            "\n" + this.Phoenix.config.prefix + "playlist create {nom}: Créer une nouvelle playlist" + 
+            "\n" + this.Phoenix.config.prefix + "playlist add {playlist} {nom}: Ajouter une musique à une playlist" + 
+            "\n" + this.Phoenix.config.prefix + "playlist play {playlist}: Joue une playlist" + 
+            "\n" + this.Phoenix.config.prefix + "playlist delete {playlist}: Supprime une playlist" + 
+            "";
+        this.textChannel.send(msg, {code: true});
     }
 }
