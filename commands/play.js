@@ -49,7 +49,7 @@ Command.Play = {
 
         if(!this.isPlaying) {
             console.log("connecting to voice channel");
-            this.textChannel = Phoenix.testChannel;
+            this.textChannel = msg.channel;
             this.voiceConnection = await this.connectToVoiceChannel(msg.member.voiceChannel);
             if(!this.voiceConnection) return;
             this.voiceChannel = msg.member.voiceChannel;
