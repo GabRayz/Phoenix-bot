@@ -46,27 +46,46 @@ Command.Play = {
 
     play: async function(msg, args, Phoenix) {
         this.Phoenix = Phoenix;
-        console.log("connecting to voice channel");
-        this.textChannel = Phoenix.testChannel;
-        this.voiceConnection = await this.connectToVoiceChannel(msg.member.voiceChannel);
-        if(!this.voiceConnection) return;
-        this.queue.push(args);
-        this.textChannel.send('Musique ajoutée à la file d\'attente.');
+
+        if(!this.isPlaying) {
+            console.log("connecting to voice channel");
+            this.textChannel = Phoenix.testChannel;
+            this.voiceConnection = await this.connectToVoiceChannel(msg.member.voiceChannel);
+            if(!this.voiceConnection) return;
+            this.voiceChannel = msg.member.voiceChannel;
+        }
+        
+        this.addToQueue(args);
 
         if (!this.isPlaying) {
             this.nextSong();
         }
     },
+    addToQueue: function(args) {
+        let name = "";
+        args.forEach(str => {
+            name += str + " ";
+        });
+        this.queue.push(name);
+        this.textChannel.send('Musique ajoutée à la file d\'attente.');
+    },
     async nextSong() {
         if(!this.queue.length > 0) return;
         // Get the stream
         let song = this.queue.shift()[0];
-        if (song.startsWith("http")) {
-            this.stream = this.getStream(song);
-        }else {
-            url = await this.getUrlFromName(song, this.Phoenix)
-            this.stream = this.getStream(url);
+        try {
+            if (song.startsWith("http")) {
+                this.stream = this.getStream(song);
+            }else {
+                url = await this.getUrlFromName(song, this.Phoenix)
+                this.stream = this.getStream(url);
+            }
+        } catch (error) {
+            console.error(error);
+            this.textChannel("Oups, j'ai des problèmes :/");
+            return;
         }
+        
 
         this.stream.on('error', (err) => {
             console.log("Erreur lors de la lecture :");
@@ -82,6 +101,8 @@ Command.Play = {
                 this.nextSong()
             }else {
                 this.isPlaying = false;
+                console.log("No more musics in queue, stop playing.");
+                this.voiceChannel.leave();
                 return;
             }
         })
