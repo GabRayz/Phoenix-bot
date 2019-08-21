@@ -62,10 +62,12 @@ Command.Play = {
         }
     },
     addToQueue: function(args) {
+        console.log(args);
         let name = "";
         args.forEach(str => {
             name += str + " ";
         });
+        console.log(name);
         this.queue.push(name);
         this.textChannel.send('Musique ajoutée à la file d\'attente.');
     },
@@ -145,7 +147,8 @@ Command.Play = {
             .catch(console.error);
         })
     },
-    stop: function() {
+    stop() {
+        console.log("Stopping music");
         this.isPlaying = false;
         this.stream.end();
     }

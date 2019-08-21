@@ -99,6 +99,13 @@ function ReadCommand(command, args, msg) {
         }
         Command.Skip.skip(msg, args, Phoenix);
     }
+    if(Command.Stop.match(command)) {
+        if(!Command.Stop.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Stop.stop(msg, args, Phoenix);
+    }
 }
 
 function PermissionDenied(msg) {
