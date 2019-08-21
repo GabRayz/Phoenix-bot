@@ -55,7 +55,7 @@ Command.Playlist = {
                 if (args.length > 2) this.add(args[2], args[1]);
                 break;
             case "play":
-                if (args.length > 1) this.play(args[1]);
+                if (args.length > 1) this.play(args[1], msg);
                 break;
             default:
                 return;
@@ -114,7 +114,7 @@ Command.Playlist = {
             }
         })
     },
-    play(playlistName) {
+    play(playlistName, msg) {
         let playlist = [];
         try {
             playlist = require('../playlists/' + playlistName + '.json');
@@ -125,6 +125,6 @@ Command.Playlist = {
         Command.Play.currentPlaylist = playlist;
         console.log('Playing playlist: ' + playlistName);
 
-        Command.Play.start();
+        Command.Play.start(this.Phoenix, msg);
     }
 }

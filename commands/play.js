@@ -48,9 +48,9 @@ Command.Play = {
     play: function(msg, args, Phoenix) {
         this.addToQueue(args);
 
-        this.start();
+        this.start(Phoenix, msg);
     },
-    start: async function() {
+    start: async function(Phoenix, msg) {
         this.Phoenix = Phoenix;
 
         if(!this.isPlaying) {
@@ -120,6 +120,7 @@ Command.Play = {
             }else {
                 this.isPlaying = false;
                 console.log("No more musics in queue, stop playing.");
+                this.Phoenix.sendClean("File d'attente vide, j'me casse.", this.textChannel, 5000);
                 this.voiceChannel.leave();
                 return;
             }
@@ -131,7 +132,7 @@ Command.Play = {
     checkPlaylist() {
         if (this.currentPlaylist.length > 0) {
             console.log('Playing random song in playlist');
-            let rand = Math.floor(Math.random() * Math.floor(this.currentPlaylist.length)) - 1;
+            let rand = Math.floor(Math.random() * Math.floor(this.currentPlaylist.length));
             this.queue.push(this.currentPlaylist[rand]);
         }
     },
