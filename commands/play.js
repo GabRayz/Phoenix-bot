@@ -74,7 +74,9 @@ Command.Play = {
     async nextSong() {
         if(!this.queue.length > 0) return;
         // Get the stream
-        let song = this.queue.shift()[0];
+        console.log(queue);
+        let song = this.queue.shift();//[0];
+        console.log(song)
         try {
             if (song.startsWith("http")) {
                 this.stream = this.getStream(song);
