@@ -57,6 +57,9 @@ Command.Playlist = {
             case "play":
                 if (args.length > 1) this.play(args[1], msg);
                 break;
+            case "delete":
+                if (args.length > 1) this.delete(args[1]);
+                break;
             default:
                 return;
         }
