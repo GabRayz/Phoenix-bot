@@ -52,7 +52,8 @@ Phoenix.sendClean = function(msg, channel, time) {
     channel.send(msg)
     .then((message) => {
         setTimeout(() => {
-            message.delete();
+            if(!message.deleted)
+                message.delete();
         }, 20000);
     })
 }
@@ -62,7 +63,8 @@ bot.on('message', (msg) => {
         console.log(msg.author.username + ' : ' + msg.content);
         let msgParts = msg.content.split(' ');
         setTimeout(() => {
-            msg.delete();
+            if(!message.deleted)
+                msg.delete();
         }, 20000);
         ReadCommand(msgParts[0].slice(1), msgParts.slice(1), msg);
     }
