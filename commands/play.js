@@ -108,7 +108,12 @@ Command.Play = {
             console.error(err);
             this.voiceHandler.end();
         })
-        this.stream.on('end', (reason) => {
+
+        this.voiceHandler = this.voiceConnection.playStream(this.stream);
+        console.log('Playing...');
+        this.isPlaying = true;
+
+        this.voiceHandler.once('end', (reason) => {
             console.log('End of soung: ' + reason);
             if(!this.isPlaying) return;
 
@@ -124,8 +129,7 @@ Command.Play = {
             }
         })
 
-        this.voiceHandler = this.voiceConnection.playStream(this.stream);
-        this.isPlaying = true;
+        
     },
     checkPlaylist() {
         if (this.currentPlaylist.length > 0) {
