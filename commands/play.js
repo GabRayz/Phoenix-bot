@@ -82,6 +82,9 @@ Command.Play = {
                 this.stream = this.getStream(song);
             }else {
                 url = await this.getUrlFromName(song, this.Phoenix)
+                if(!url) {
+                    return;
+                }
                 this.stream = this.getStream(url);
             }
         } catch (error) {
@@ -121,14 +124,21 @@ Command.Play = {
     getStream(url) {
         console.log('Get stream from url : ' + url);
         this.textChannel.send("Musique en cours : " + url);
-        return youtube(url);
+        let stream = youtube(url);
+        return stream;
     },
     getUrlFromName(name, Phoenix) {
         console.log('Get url from name : ' + name);
         return new Promise(resolve => {
             request('https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + name + '&key=' + Phoenix.config.ytapikey, async (err, res, body) => {
-                let video = JSON.parse(body).items[0];
+                let videos = JSON.parse(body).items;
+                let video = videos.find(vid => vid.id.kind == "youtube#video");
+                console.log(video);
                 let id = video.id.videoId;
+                if(!id) {
+                    this.textChannel.send("Je n'ai pas trouvé la vidéo :c");
+                    resolve(false);
+                }
                 resolve('https://www.youtube.com/watch?v=' + id);
             })
         })
@@ -150,8 +160,10 @@ Command.Play = {
         })
     },
     stop() {
+        if(!this.isPlaying) return;
         console.log("Stopping music");
         this.isPlaying = false;
         this.stream.end();
+        this.voiceChannel.leave();
     }
 }
