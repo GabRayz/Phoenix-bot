@@ -74,7 +74,7 @@ Command.Play = {
     async nextSong() {
         if(!this.queue.length > 0) return;
         // Get the stream
-        console.log(queue);
+        console.log(this.queue);
         let song = this.queue.shift();//[0];
         console.log(song)
         try {
