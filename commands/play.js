@@ -65,12 +65,11 @@ Command.Play = {
         }
     },
     addToQueue: function(args) {
-        console.log(args);
         let name = "";
         args.forEach(str => {
             name += str + " ";
         });
-        console.log(name);
+        console.log("Queueing: " + name);
         this.queue.push(name);
         this.textChannel.send('Musique ajoutée à la file d\'attente.');
     },
@@ -84,11 +83,9 @@ Command.Play = {
             }
         }
         // Get the stream
-        console.log('Current queue: ');
-        console.log(this.queue);
+        console.log('Current queue: ' + this.queue);
         let song = this.queue.shift();//[0];
-        console.log('Next song: ');
-        console.log(song)
+        console.log('Next song: ' + song);
         try {
             if (song.startsWith("http")) {
                 this.stream = this.getStream(song);
