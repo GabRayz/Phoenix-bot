@@ -43,8 +43,14 @@ Command.Play = {
     },
     queue: [],
     isPlaying: false,
+    currentPlaylist: [],
 
-    play: async function(msg, args, Phoenix) {
+    play: function(msg, args, Phoenix) {
+        this.addToQueue(args);
+
+        this.start();
+    },
+    start: async function() {
         this.Phoenix = Phoenix;
 
         if(!this.isPlaying) {
@@ -53,11 +59,7 @@ Command.Play = {
             this.voiceConnection = await this.connectToVoiceChannel(msg.member.voiceChannel);
             if(!this.voiceConnection) return;
             this.voiceChannel = msg.member.voiceChannel;
-        }
-        
-        this.addToQueue(args);
 
-        if (!this.isPlaying) {
             this.nextSong();
         }
     },
@@ -72,10 +74,19 @@ Command.Play = {
         this.textChannel.send('Musique ajoutée à la file d\'attente.');
     },
     async nextSong() {
-        if(!this.queue.length > 0) return;
+        console.log('Choosing next song...');
+        if(!this.queue.length > 0) {
+            if(this.currentPlaylist.length > 0) {
+                this.checkPlaylist();
+            }else {
+                return;
+            }
+        }
         // Get the stream
+        console.log('Current queue: ');
         console.log(this.queue);
         let song = this.queue.shift();//[0];
+        console.log('Next song: ');
         console.log(song)
         try {
             if (song.startsWith("http")) {
@@ -117,6 +128,13 @@ Command.Play = {
         this.voiceHandler = this.voiceConnection.playStream(this.stream);
         this.isPlaying = true;
     },
+    checkPlaylist() {
+        if (this.currentPlaylist.length > 0) {
+            console.log('Playing random song in playlist');
+            let rand = Math.floor(Math.random() * Math.floor(this.currentPlaylist.length)) - 1;
+            this.queue.push(this.currentPlaylist[rand]);
+        }
+    },
     skip() {
         console.log('Skip soung');
         this.stream.end();
@@ -133,7 +151,6 @@ Command.Play = {
             request('https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + name + '&key=' + Phoenix.config.ytapikey, async (err, res, body) => {
                 let videos = JSON.parse(body).items;
                 let video = videos.find(vid => vid.id.kind == "youtube#video");
-                console.log(video);
                 let id = video.id.videoId;
                 if(!id) {
                     this.textChannel.send("Je n'ai pas trouvé la vidéo :c");

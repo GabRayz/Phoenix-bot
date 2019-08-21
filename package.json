@@ -21,6 +21,7 @@
     "discord.js": "^11.5.1",
     "express": "^4.17.1",
     "ffmpeg": "0.0.4",
+    "fs": "0.0.1-security",
     "google-auth-library": "^5.2.0",
     "googleapis": "^42.0.0",
     "help": "^3.0.2",

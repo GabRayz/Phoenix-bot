@@ -24,6 +24,7 @@ const Clear = require('./commands/clear.js');
 const Play = require('./commands/play.js');
 require('./commands/skip.js');
 require('./commands/stop.js');
+require('./commands/playlist.js');
 
 var Phoenix = {}
 Phoenix.bot = bot;
@@ -47,10 +48,22 @@ bot.on('ready', () => {
     
 });
 
+Phoenix.sendClean = function(msg, channel, time) {
+    channel.send(msg)
+    .then((message) => {
+        setTimeout(() => {
+            message.delete();
+        }, 20000);
+    })
+}
+
 bot.on('message', (msg) => {
     if (msg.content.startsWith(Config.prefix)) {
         console.log(msg.author.username + ' : ' + msg.content);
         let msgParts = msg.content.split(' ');
+        setTimeout(() => {
+            msg.delete();
+        }, 20000);
         ReadCommand(msgParts[0].slice(1), msgParts.slice(1), msg);
     }
 });
@@ -90,6 +103,13 @@ function ReadCommand(command, args, msg) {
             return;
         }
         Command.Play.play(msg, args, Phoenix);
+    }
+    if(Command.Playlist.match(command)) {
+        if(!Command.Playlist.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Playlist.read(msg, args, Phoenix);
     }
 
     if(Command.Skip.match(command)) {
