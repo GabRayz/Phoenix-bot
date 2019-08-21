@@ -44,5 +44,6 @@ Command.Off = {
     shutdown: function(Phoenix) {
         console.log('Phoenix disconnected.')
         Phoenix.bot.destroy();
+        process.exit(0)
     }
 }
