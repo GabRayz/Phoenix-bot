@@ -111,7 +111,7 @@ Command.Play = {
             this.voiceHandler.end();
         })
         this.stream.on('end', (reason) => {
-            console.log('End of soung');
+            console.log('End of soung: ' + reason);
             if(!this.isPlaying) return;
 
             this.voiceHandler = null;
