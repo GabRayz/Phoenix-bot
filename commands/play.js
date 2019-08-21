@@ -46,6 +46,7 @@ Command.Play = {
     currentPlaylist: [],
 
     play: function(msg, args, Phoenix) {
+        this.textChannel = msg.channel;
         this.addToQueue(args);
 
         this.start(Phoenix, msg);
