@@ -155,7 +155,7 @@ Command.Play = {
     },
     skip() {
         console.log('Skip soung');
-        this.stream.end();
+        this.voiceHandler.end();
     },
     getStream(url) {
         console.log('Get stream from url : ' + url);
