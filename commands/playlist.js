@@ -52,7 +52,7 @@ Command.Playlist = {
                 this.list();
                 break;
             case "add":
-                if (args.length > 2) this.add(args[2], args[1], msg.author);
+                if (args.length > 2) this.add(this.getSoungName(args), args[1], msg.author);
                 break;
             case "play":
                 if (args.length > 1) this.play(args[1], msg);
@@ -100,6 +100,14 @@ Command.Playlist = {
             }
             this.textChannel.send(msg);
         })
+    },
+    getSoungName: function(args) {
+        let res = "";
+        for (let i = 2; i < args.length; i++) {
+            const word = args[i];
+            res += word + " ";
+        }
+        return res;
     },
     add(song, playlistName, user) {
         console.log("Adding " + song + " to playlist " + playlistName);
