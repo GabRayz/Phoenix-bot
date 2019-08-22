@@ -154,8 +154,10 @@ Command.Play = {
         }
     },
     skip() {
-        console.log('Skip soung');
-        this.voiceHandler.end();
+        if(this.isPlaying) {
+            console.log('Skip soung');
+            this.voiceHandler.end();
+        }
     },
     getStream(url) {
         console.log('Get stream from url : ' + url);
