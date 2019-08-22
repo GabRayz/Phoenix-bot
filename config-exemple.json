@@ -1,9 +1,12 @@
 {
 	"login" : "BotLogin",
 	"name" : "botName",
+	"activity": "activity",
 	"prefix" : "!",
 	"connectionAlert" : "false",
 	"defaultGuild" : "Name of the guild",
+	"testChannel" : "Default channel id",
 	"everyoneBlackListed" : "true",
-	"key" : "youtube api key"
+	"ytapikey" : "google api key",
+	"sheetskey": "google api key"
 }
