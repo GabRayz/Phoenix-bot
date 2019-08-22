@@ -48,7 +48,8 @@ Command.Play = {
 
     play: function(msg, args, Phoenix) {
         this.textChannel = msg.channel;
-        this.addToQueue(args);
+        this.Phoenix = Phoenix;
+        this.addToQueue(args, msg);
 
         this.start(Phoenix, msg);
     },
@@ -65,14 +66,15 @@ Command.Play = {
             this.nextSong();
         }
     },
-    addToQueue: function(args) {
+    addToQueue: function(args, msg) {
         let name = "";
         args.forEach(str => {
             name += str + " ";
         });
         console.log("Queueing: " + name);
         this.queue.push(name);
-        this.textChannel.send('Musique ajoutée à la file d\'attente.');
+        // this.textChannel.send('Musique ajoutée à la file d\'attente.');
+        msg.react('✅');
     },
     async nextSong() {
         console.log('Choosing next song...');
@@ -99,7 +101,7 @@ Command.Play = {
             }
         } catch (error) {
             console.error(error);
-            this.textChannel("Oups, j'ai des problèmes :/");
+            this.textChannel.send("Oups, j'ai des problèmes :/");
             return;
         }
         
@@ -145,7 +147,7 @@ Command.Play = {
     },
     getStream(url) {
         console.log('Get stream from url : ' + url);
-        this.textChannel.send("Musique en cours : " + url);
+        this.Phoenix.sendClean("Musique en cours : " + url, this.textChannel, 60000);
         let stream = youtube(url);
         return stream;
     },

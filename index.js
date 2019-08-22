@@ -141,7 +141,8 @@ function ReadCommand(command, args, msg) {
 
 function PermissionDenied(msg) {
     console.log('Permission denied');
-    msg.reply("Patouche");
+    // msg.reply("Patouche");
+    msg.react('⛔️');
 }
 
 function GetGuildMember(user) {
