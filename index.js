@@ -26,6 +26,7 @@ require('./commands/skip.js');
 require('./commands/stop.js');
 require('./commands/playlist.js');
 require('./commands/queue.js');
+require('./commands/shop.js');
 
 var Phoenix = {}
 Phoenix.bot = bot;
@@ -76,7 +77,7 @@ function ReadCommand(command, args, msg) {
         return;
     }
     if (Command.Off.match(command)) {
-        if(!Command.Off.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+        if(!Command.Off.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
             PermissionDenied(msg);
             return;
         }
@@ -85,7 +86,7 @@ function ReadCommand(command, args, msg) {
     }
     
     if(Command.Help.match(command)) {
-        if(!Command.Help.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+        if(!Command.Help.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
             PermissionDenied(msg);
             return;
         }
@@ -93,7 +94,7 @@ function ReadCommand(command, args, msg) {
     }
 
     if(Command.Clear.match(command)) {
-        if(!Command.Clear.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+        if(!Command.Clear.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
             PermissionDenied(msg);
             return;
         }
@@ -101,14 +102,14 @@ function ReadCommand(command, args, msg) {
     }
 
     if(Command.Play.match(command)) {
-        if(!Command.Play.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+        if(!Command.Play.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
             PermissionDenied(msg);
             return;
         }
         Command.Play.play(msg, args, Phoenix);
     }
     if(Command.Playlist.match(command)) {
-        if(!Command.Playlist.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+        if(!Command.Playlist.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
             PermissionDenied(msg);
             return;
         }
@@ -116,14 +117,14 @@ function ReadCommand(command, args, msg) {
     }
 
     if(Command.Skip.match(command)) {
-        if(!Command.Skip.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+        if(!Command.Skip.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
             PermissionDenied(msg);
             return;
         }
         Command.Skip.skip(msg, args, Phoenix);
     }
     if(Command.Stop.match(command)) {
-        if(!Command.Stop.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+        if(!Command.Stop.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
             PermissionDenied(msg);
             return;
         }
@@ -131,18 +132,26 @@ function ReadCommand(command, args, msg) {
     }
 
     if(Command.Queue.match(command)) {
-        if(!Command.Queue.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+        if(!Command.Queue.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
             PermissionDenied(msg);
             return;
         }
         Command.Queue.queue(msg, Phoenix);
     }
+
+    if(Command.Shop.match(command)) {
+        if(!Command.Shop.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Shop.read(msg, args, Phoenix);
+    }
 }
 
 function PermissionDenied(msg) {
     console.log('Permission denied');
-    // msg.reply("Patouche");
-    msg.react('⛔️');
+    msg.reply("Patouche");
+    // msg.react('');
 }
 
 function GetGuildMember(user) {

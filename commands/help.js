@@ -50,6 +50,7 @@ Command.Help = {
             "\nstop: " + Command.Stop.description +
             "\nplaylist: " + Command.Playlist.description +
             "\nqueue: " + Command.Queue.description +
+            "\nshop: " + Command.Shop.description +
             "";
         
         channel.send(text, {
