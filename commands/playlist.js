@@ -186,7 +186,7 @@ Command.Playlist = {
             return;
         }
         let msg = playlistName + ": playlist de " + playlist.authors[0] + " | ";
-        playlist.forEach(song => msg += song + ", ");
+        playlist.items.forEach(song => msg += song + ", ");
         this.textChannel.send(msg);
     }
 }
