@@ -48,6 +48,7 @@ Command.Help = {
             "\nplay [nom/url]: " + Command.Play.description +
             "\nskip: " + Command.Skip.description +
             "\nstop: " + Command.Stop.description +
+            "\nplaylist: " + Command.Playlist.description +
             "";
         
         channel.send(text, {

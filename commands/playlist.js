@@ -63,6 +63,9 @@ Command.Playlist = {
             case "help":
                 this.showHelp();
                 break
+            case "see":
+                    if (args.length > 1) this.see(args[1]);
+                    break;
             default:
                 return;
         }
@@ -165,6 +168,7 @@ Command.Playlist = {
             "\n" + this.Phoenix.config.prefix + "playlist add {playlist} {nom}: Ajouter une musique à une playlist" + 
             "\n" + this.Phoenix.config.prefix + "playlist play {playlist}: Joue une playlist" + 
             "\n" + this.Phoenix.config.prefix + "playlist delete {playlist}: Supprime une playlist" + 
+            "\n" + this.Phoenix.config.prefix + "playlist see {playlist}: Liste le contenu d'une playlist" + 
             "";
         this.textChannel.send(msg, {code: true});
     },
@@ -172,5 +176,17 @@ Command.Playlist = {
         if(playlist.authors.includes(user.username)) return true;
         this.Phoenix.sendClean("Tu n'es pas l'auteur de cette playlist", this.textChannel, 15000);
         return false;
+    },
+    see(playlistName) {
+        let playlist = {};
+        try {
+            playlist = require('../playlists/' + playlistName + '.json');
+        }catch(err) {
+            console.error(err);
+            return;
+        }
+        let msg = playlistName + ": playlist de " + playlist.authors[0] + " | ";
+        playlist.forEach(song => msg += song + ", ");
+        this.textChannel.send(msg);
     }
 }
