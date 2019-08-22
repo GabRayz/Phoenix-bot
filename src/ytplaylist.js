@@ -32,6 +32,7 @@ module.exports = class YTplaylist {
                 }
             })
             console.log('Playlist imported !');
+            Command.Playlist.textChannel.send("Playlist importée !");
         }
     }
 
