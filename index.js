@@ -34,7 +34,7 @@ Phoenix.config = Config;
 
 bot.on('ready', () => {
     console.log('Phoenix bot ready to operate');
-    bot.user.setActivity('être codé par GabRay').catch((e) => console.error(e))
+    bot.user.setActivity(Config.activity).catch((e) => console.error(e))
     bot.user.setUsername(Config.name)
 
     // Find the default guild and test Channel
