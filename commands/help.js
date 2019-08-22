@@ -49,6 +49,7 @@ Command.Help = {
             "\nskip: " + Command.Skip.description +
             "\nstop: " + Command.Stop.description +
             "\nplaylist: " + Command.Playlist.description +
+            "\nqueue: " + Command.Queue.description +
             "";
         
         channel.send(text, {
