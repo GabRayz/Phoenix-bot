@@ -133,8 +133,10 @@ Command.Playlist = {
         }catch(err) {
             console.error('Playlist not found: ' + playlistName);
             this.Phoenix.sendClean("Je n'ai pas trouvé cette playlist.", this.textChannel, 5000);
+            return;
         }
         Command.Play.currentPlaylist = playlist.items;
+        Command.Play.currentPlaylistName = playlistName;
         console.log('Playing playlist: ' + playlistName);
 
         Command.Play.start(this.Phoenix, msg);

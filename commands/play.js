@@ -44,6 +44,7 @@ Command.Play = {
     queue: [],
     isPlaying: false,
     currentPlaylist: [],
+    currentPlaylistName: "",
 
     play: function(msg, args, Phoenix) {
         this.textChannel = msg.channel;
@@ -118,7 +119,7 @@ Command.Play = {
             if(!this.isPlaying) return;
 
             this.voiceHandler = null;
-            if(this.queue.length > 0) {
+            if(this.queue.length > 0 || Command.Play.currentPlaylist.length > 0) {
                 this.nextSong()
             }else {
                 this.isPlaying = false;
@@ -154,12 +155,18 @@ Command.Play = {
             request('https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + name + '&key=' + Phoenix.config.ytapikey, async (err, res, body) => {
                 let videos = JSON.parse(body).items;
                 let video = videos.find(vid => vid.id.kind == "youtube#video");
-                let id = video.id.videoId;
-                if(!id) {
+                try {
+                    let id = video.id.videoId;
+                    if(!id) {
+                        this.textChannel.send("Je n'ai pas trouvé la vidéo :c");
+                        resolve(false);
+                    }
+                    resolve('https://www.youtube.com/watch?v=' + id);
+                }catch(err) {
+                    console.error(err);
                     this.textChannel.send("Je n'ai pas trouvé la vidéo :c");
                     resolve(false);
                 }
-                resolve('https://www.youtube.com/watch?v=' + id);
             })
         })
         

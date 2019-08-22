@@ -25,6 +25,7 @@ const Play = require('./commands/play.js');
 require('./commands/skip.js');
 require('./commands/stop.js');
 require('./commands/playlist.js');
+require('./commands/queue.js');
 
 var Phoenix = {}
 Phoenix.bot = bot;
@@ -127,6 +128,14 @@ function ReadCommand(command, args, msg) {
             return;
         }
         Command.Stop.stop(msg, args, Phoenix);
+    }
+
+    if(Command.Queue.match(command)) {
+        if(!Command.Queue.checkPerm(command, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Queue.queue(msg, Phoenix);
     }
 }
 
