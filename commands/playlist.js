@@ -1,6 +1,7 @@
-Command = require('./command.js');
 const fs = require('fs');
-require('./play.js');
+const YTplaylist = require('../src/ytplaylist');
+Command = require('./command.js');
+// require('./play.js');
 
 Command.Playlist = {
     name: "playlist",
@@ -41,7 +42,7 @@ Command.Playlist = {
     
         return true;
     },
-    read(msg, args, Phoenix) {
+    read: function(msg, args, Phoenix) {
         this.textChannel = msg.channel;
         this.Phoenix = Phoenix;
         switch(args[0]) {
@@ -52,7 +53,13 @@ Command.Playlist = {
                 this.list();
                 break;
             case "add":
-                if (args.length > 2) this.add(this.getSoungName(args), args[1], msg.author);
+                if (args.length > 2) {
+                    if(args[2].includes('playlist?list=')) {
+                        YTplaylist.ImportPlaylist(args[2], args[1], msg.author);
+                    }else {
+                        this.add(this.getSoungName(args), args[1], msg.author);
+                    }
+                }
                 break;
             case "play":
                 if (args.length > 1) this.play(args[1], msg);
@@ -109,16 +116,17 @@ Command.Playlist = {
         }
         return res;
     },
-    add(song, playlistName, user) {
+    add(song, playlistName, user, log = true) {
         console.log("Adding " + song + " to playlist " + playlistName);
         let playlist = {};
         try {
             playlist = require('../playlists/' + playlistName + '.json');
         }catch (err) {
-            this.Phoenix.sendClean('Cette playlist n\'existe pas :/', this.textChannel, 20000)
+            if(log)
+                this.Phoenix.sendClean('Cette playlist n\'existe pas :/', this.textChannel, 20000)
             console.log("Cannot find playlist " + playlistName);
             console.error(err);
-            return;
+            return false;
         }
 
         if(!this.checkAuthors(playlist, user)) return false;
@@ -129,10 +137,12 @@ Command.Playlist = {
             if(err) {
                 console.error(err)
             }else {
-                this.Phoenix.sendClean("Musique ajoutée à la playlist", this.textChannel, 10000);
+                if(log)
+                    this.Phoenix.sendClean("Musique ajoutée à la playlist", this.textChannel, 10000);
                 console.log('Music added to playlist');
             }
-        })
+        });
+        return true;
     },
     play(playlistName, msg) {
         let playlist = [];

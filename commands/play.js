@@ -1,7 +1,7 @@
 const request = require('request');
 const youtube = require('ytdl-core');
 const opus = require('opusscript');
-const YTplatlist = require('../src/ytplaylist');
+const YTplaylist = require('../src/ytplaylist');
 Command = require('./command.js');
 
 Command.Play = {
@@ -53,7 +53,7 @@ Command.Play = {
 
         if(args.length > 0 && args[0].startsWith('http') && args[0].includes('playlist?list=')) {
             console.log('Importing playlist...');
-            YTplatlist.Enqueue(args[0], function() {
+            YTplaylist.Enqueue(args[0], function() {
                 Command.Play.start(Phoenix, msg);
             });
         }else {

@@ -1,6 +1,6 @@
 let Command = require('../commands/command.js');
-require('../commands/play.js');
-require('../commands/playlist.js');
+// require('../commands/play.js');
+// require('../commands/playlist.js');
 const request = require('request');
 let Config = {}
 Config = require('../config.json')
@@ -17,6 +17,22 @@ module.exports = class YTplaylist {
         }
         console.log('Playlist enqueued !');
         callback();
+    }
+
+    static async ImportPlaylist(url, playlistName, user) {
+        console.log('Playlist name : ' + playlistName);
+        let id = url.split('=')[1];
+        let videos = await this.GetPlaylist(id);
+        if(videos) {
+            videos.forEach(video => {
+                let res = Command.Playlist.add(video, playlistName, user, false);
+                if(!res){
+                    Command.Playlist.textChannel.send("Oh, une erreur :/");
+                    return;
+                }
+            })
+            console.log('Playlist imported !');
+        }
     }
 
     static GetPlaylist(id) {
