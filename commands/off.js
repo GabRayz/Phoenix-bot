@@ -5,7 +5,8 @@ Command.Off = {
     alias: [
         "off",
         "shutdown",
-        "disconnect"
+        "disconnect",
+        "restart"
     ],
     groupOption: {
         whitelist: ["Roi"],
