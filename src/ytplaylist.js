@@ -20,23 +20,43 @@ module.exports = class YTplaylist {
     }
 
     static GetPlaylist(id) {
-        return new Promise(resolve => {
+        return new Promise(async (resolve) => {
             try {
-                console.log('Requesting playlist...')
-                request('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id + '&key=' + key, (err, res, body) => {
-                    if(err) {
-                        console.error(err);
-                        return false;
-                    }
-                    console.log('Playlist get');
-                    body = JSON.parse(body);
-                    let videos = body.items;
-                    resolve(this.getVideos(videos));
-                })
+                console.log('Requesting playlist...');
+                let pageToken = " ";
+                let morePages = true;
+                let videos = [];
+                while(pageToken) {
+                    let res = await this.Get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=' + pageToken + '&playlistId=' + id + '&key=' + key);
+                    
+                    res.videos.forEach(vid => {
+                        videos.push(vid);
+                    });
+                    console.log('Merged pages');
+                    pageToken = res.nextPageToken;
+                }
+                resolve(this.getVideos(videos))
             }catch(err) {
                 console.error(err);
                 return false;
             }
+        })
+    }
+
+    static Get(url) {
+        console.log('Send request');
+        return new Promise(resolve => {
+            request(url, (err, res, body) => {
+                if(err) {
+                    console.error(err);
+                    return false;
+                }
+                body = JSON.parse(body);
+                
+                let videos = body.items.filter(vid => vid.snippet.title != "Private video");
+                let nextPageToken = (body.nextPageToken ? body.nextPageToken: false);
+                resolve({"videos": videos, "nextPageToken": nextPageToken});
+            })
         })
     }
 
