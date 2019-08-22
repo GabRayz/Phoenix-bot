@@ -23,7 +23,7 @@ module.exports = class YTplaylist {
         return new Promise(resolve => {
             try {
                 console.log('Requesting playlist...')
-                request('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=' + id + '&key=' + key, (err, res, body) => {
+                request('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id + '&key=' + key, (err, res, body) => {
                     if(err) {
                         console.error(err);
                         return false;
