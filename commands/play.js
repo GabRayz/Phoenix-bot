@@ -1,6 +1,7 @@
 const request = require('request');
 const youtube = require('ytdl-core');
 const opus = require('opusscript');
+const YTplatlist = require('../src/ytplaylist');
 Command = require('./command.js');
 
 Command.Play = {
@@ -49,9 +50,16 @@ Command.Play = {
     play: function(msg, args, Phoenix) {
         this.textChannel = msg.channel;
         this.Phoenix = Phoenix;
-        this.addToQueue(args, msg);
 
-        this.start(Phoenix, msg);
+        if(args.length > 0 && args[0].startsWith('http') && args[0].includes('playlist?list=')) {
+            console.log('Importing playlist...');
+            YTplatlist.Enqueue(args[0], function() {
+                Command.Play.start(Phoenix, msg);
+            });
+        }else {
+            this.addToQueue(args, msg);
+            this.start(Phoenix, msg);
+        }
     },
     start: async function(Phoenix, msg) {
         this.Phoenix = Phoenix;
@@ -75,6 +83,10 @@ Command.Play = {
         this.queue.push(name);
         // this.textChannel.send('Musique ajoutée à la file d\'attente.');
         msg.react('✅');
+    },
+    addToQueueString: function(name) {
+        console.log("Queueing: " + name);
+        this.queue.push(name);
     },
     async nextSong() {
         console.log('Choosing next song...');
