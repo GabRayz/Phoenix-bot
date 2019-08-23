@@ -16,7 +16,7 @@ Config = require('./config.json');
 console.log('Connection...');
 bot.login(Config.login);
 module.exports = bot;
-
+ 
 // Import commands
 const Off = require('./commands/off.js');
 const Help = require('./commands/help.js');
