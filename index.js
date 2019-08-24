@@ -27,6 +27,8 @@ require('./commands/stop.js');
 require('./commands/playlist.js');
 require('./commands/queue.js');
 require('./commands/shop.js');
+require('./commands/pause.js');
+require('./commands/resume.js');
 
 var Phoenix = {}
 Phoenix.bot = bot;
@@ -145,6 +147,22 @@ function ReadCommand(command, args, msg) {
             return;
         }
         Command.Shop.read(msg, args, Phoenix);
+    }
+
+    if(Command.Pause.match(command)) {
+        if(!Command.Pause.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Pause.pause();
+    }
+
+    if(Command.Resume.match(command)) {
+        if(!Command.Resume.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Resume.resume();
     }
 }
 
