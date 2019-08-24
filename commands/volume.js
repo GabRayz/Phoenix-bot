@@ -41,7 +41,7 @@ Command.Volume = {
     },
     set: function(msg, Phoenix, args) {
         if(!args.length > 0) {
-            Phoenix.sendClean('Volume actuel: ' + Command.Play.volume, msg.channel, 5000);
+            Phoenix.sendClean('Volume actuel: ' + Command.Play.volume * 100, msg.channel, 5000);
             return;
         }
         let volume = args[0];
