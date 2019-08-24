@@ -41,7 +41,7 @@ Command.Clear = {
     },
 
     clear: function(channel, Phoenix) {
-        let messages = channel.messages.filter(msg => msg.author.id == Phoenix.bot.user.id || msg.content.startsWith(this.Phoenix.config.prefix));
+        let messages = channel.messages.filter(msg => msg.author.id == Phoenix.bot.user.id || msg.content.startsWith(Phoenix.config.prefix));
         messages.forEach(message => {
             message.delete();
         });
