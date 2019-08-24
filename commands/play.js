@@ -46,6 +46,7 @@ Command.Play = {
     isPlaying: false,
     currentPlaylist: [],
     currentPlaylistName: "",
+    volume: 1,
 
     play: function(msg, args, Phoenix) {
         this.textChannel = msg.channel;
@@ -131,6 +132,7 @@ Command.Play = {
         })
 
         this.voiceHandler = this.voiceConnection.playStream(this.stream);
+        this.voiceHandler.setVolume(this.volume);
         console.log('Playing...');
         this.isPlaying = true;
         let title = await this.GetNameFromUrl(url);

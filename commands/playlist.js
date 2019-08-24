@@ -57,6 +57,8 @@ Command.Playlist = {
                 if (args.length > 2) {
                     if(args[2].includes('playlist?list=')) {
                         YTplaylist.ImportPlaylist(args[2], args[1], msg.author);
+                    }else if(args[2].includes('spotify.com')) {
+                        Command.Spotify.read(args[2], args[1], msg.author);
                     }else {
                         this.add(this.getSoungName(args), args[1], msg.author);
                     }

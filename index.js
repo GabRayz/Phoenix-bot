@@ -29,6 +29,8 @@ require('./commands/queue.js');
 require('./commands/shop.js');
 require('./commands/pause.js');
 require('./commands/resume.js');
+require('./commands/spotify.js');
+require('./commands/volume.js');
 
 var Phoenix = {}
 Phoenix.bot = bot;
@@ -163,6 +165,22 @@ function ReadCommand(command, args, msg) {
             return;
         }
         Command.Resume.resume();
+    }
+
+    if(Command.Volume.match(command)) {
+        if(!Command.Volume.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Volume.set(msg, Phoenix, args);
+    }
+
+    if(Command.Spotify.match(command)) {
+        if(!Command.Spotify.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
+            PermissionDenied(msg);
+            return;
+        }
+        Command.Spotify.read(args[0]);
     }
 }
 

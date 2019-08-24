@@ -1,10 +1,10 @@
 Command = require('./command.js');
+require('./play');
 
-Command.Help = {
-    name: "help",
+Command.Volume = {
+    name: "volume",
     alias: [
-        "help",
-        "h"
+        "volume"
     ],
     groupOption: {
         whitelist: [],
@@ -14,7 +14,7 @@ Command.Help = {
         whitelist: [],
         blacklist: []
     },
-    description: "Affiche la liste des commandes",
+    description: "Changer le volume",
 
 
     match: function(command) {
@@ -39,24 +39,19 @@ Command.Help = {
     
         return true;
     },
-
-    show: function(channel) {
-        let text = "Commandes : \n"+
-            "\nhelp: " + Command.Help.description +
-            "\noff: " +  Command.Off.description +
-            "\nclear: " + Command.Clear.description +
-            "\nplay [nom/url]: " + Command.Play.description +
-            "\nskip: " + Command.Skip.description +
-            "\nstop: " + Command.Stop.description +
-            "\nvolume [0-200]: " + Command.Volume.description +
-            "\nplaylist: " + Command.Playlist.description +
-            "\nqueue: " + Command.Queue.description +
-            "\nshop: " + Command.Shop.description +
-            "";
-        
-        channel.send(text, {
-            code: true
-        })
-        .catch(console.error);
+    set: function(msg, Phoenix, args) {
+        if(!args.length > 0) return;
+        let volume = args[0];
+        if(Command.Play.voiceHandler && !Command.Play.voiceHandler.paused) {
+            if (volume >= 0 && volume <= 200) {
+                Command.Play.voiceHandler.setVolume(volume/100);
+                Command.Play.volume = volume / 100;
+                console.log('Volume set');
+            }else {
+                Phoenix.sendClean('Le volume doit etre compris entre 0 et 200.', msg.channel, 5000);
+            }
+        }else {
+            Phoenix.sendClean('Le bot ne joue pas, ou alors est en pause.', msg.channel, 5000);
+        }
     }
 }
