@@ -51,6 +51,10 @@ Command.Play = {
         this.textChannel = msg.channel;
         this.Phoenix = Phoenix;
 
+        if(args.length > 0 && args[0] == 'debug') {
+            console.log(this.voiceHandler);
+            return;
+        }
         if(args.length > 0 && args[0].startsWith('http') && args[0].includes('playlist?list=')) {
             console.log('Importing playlist...');
             YTplaylist.Enqueue(args[0], function() {
