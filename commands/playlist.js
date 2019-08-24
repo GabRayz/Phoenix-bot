@@ -18,6 +18,7 @@ Command.Playlist = {
         blacklist: []
     },
     description: "Gérer les playlist. !playlist help",
+    path: '../../playlists/',
 
 
     match: function(command) {
@@ -80,7 +81,7 @@ Command.Playlist = {
     create(name, user) {
         name = name.split('.')[0];
         let content = '{"authors": ["' + user.username + '"], "items": []}';
-        fs.writeFile('playlists/' + name + '.json', content, (err) => {
+        fs.writeFile('../playlists/' + name + '.json', content, (err) => {
             if (err === null) {
                 console.log('Playlist created');
                 this.textChannel.send('La playlist ' + name + ' a été créée. Ajoutez des musiques avec ' + this.Phoenix.config.prefix + 'playlist add [playlist] [url]');
@@ -91,7 +92,7 @@ Command.Playlist = {
         })
     },
     list() {
-        fs.readdir('playlists/', (err, files) => {
+        fs.readdir('../playlists/', (err, files) => {
             if(err) {
                 console.error(err);
                 return;
@@ -120,7 +121,7 @@ Command.Playlist = {
         console.log("Adding " + song + " to playlist " + playlistName);
         let playlist = {};
         try {
-            playlist = require('../playlists/' + playlistName + '.json');
+            playlist = require('../../playlists/' + playlistName + '.json');
         }catch (err) {
             if(log)
                 this.Phoenix.sendClean('Cette playlist n\'existe pas :/', this.textChannel, 20000)
@@ -133,7 +134,7 @@ Command.Playlist = {
 
         playlist.items.push(song)
         let text = JSON.stringify(playlist);
-        fs.writeFile("playlists/" + playlistName + ".json", text, (err) => {
+        fs.writeFile("../playlists/" + playlistName + ".json", text, (err) => {
             if(err) {
                 console.error(err)
             }else {
@@ -147,7 +148,7 @@ Command.Playlist = {
     play(playlistName, msg) {
         let playlist = [];
         try {
-            playlist = require('../playlists/' + playlistName + '.json');
+            playlist = require('../../playlists/' + playlistName + '.json');
         }catch(err) {
             console.error('Playlist not found: ' + playlistName);
             this.Phoenix.sendClean("Je n'ai pas trouvé cette playlist.", this.textChannel, 5000);
@@ -162,7 +163,7 @@ Command.Playlist = {
     delete(playlistName, user) {
         let playlist = {};
         try {
-            playlist = require("../playlists/" + playlistName + ".json")
+            playlist = require("../../playlists/" + playlistName + ".json")
         }catch(err) {
             console.error(err);
             this.Phoenix.sendClean("Je n'ai pas trouvé cette playlist", this.textChannel, 5000);
@@ -171,7 +172,7 @@ Command.Playlist = {
 
         if(!this.checkAuthors(playlist, user)) return false;
 
-        fs.unlink("playlists/" + playlistName + ".json", (err) => {
+        fs.unlink("../playlists/" + playlistName + ".json", (err) => {
             if (err) {
                 console.error(err);
                 this.Phoenix.sendClean("Je n'ai pas trouvé cette playlist", this.textChannel, 5000);
@@ -200,13 +201,20 @@ Command.Playlist = {
     see(playlistName) {
         let playlist = {};
         try {
-            playlist = require('../playlists/' + playlistName + '.json');
+            playlist = require('../../playlists/' + playlistName + '.json');
         }catch(err) {
             console.error(err);
             return;
         }
+        let msgs = [];
         let msg = playlistName + ": playlist de " + playlist.authors[0] + " | ";
-        playlist.items.forEach(song => msg += song + ", ");
-        this.textChannel.send(msg);
+        playlist.items.forEach(song => {
+            msg += song + ", ";
+            if(msg.length > 1700) {
+                msgs.push(msg);
+                msg = "";
+            }
+        });
+        msgs.forEach(m => this.textChannel.send(m));
     }
 }
