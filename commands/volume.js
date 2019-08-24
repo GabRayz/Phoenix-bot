@@ -40,7 +40,10 @@ Command.Volume = {
         return true;
     },
     set: function(msg, Phoenix, args) {
-        if(!args.length > 0) return;
+        if(!args.length > 0) {
+            Phoenix.sendClean('Volume actuel: ' + Command.Play.volume, msg.channel, 5000);
+            return;
+        }
         let volume = args[0];
         if(Command.Play.voiceHandler && !Command.Play.voiceHandler.paused) {
             if (volume >= 0 && volume <= 200) {
