@@ -54,13 +54,13 @@ bot.on('ready', () => {
     
 });
 
-Phoenix.sendClean = function(msg, channel, time) {
+Phoenix.sendClean = function(msg, channel, time = 20000) {
     channel.send(msg)
     .then((message) => {
         setTimeout(() => {
             if(!message.deleted)
                 message.delete();
-        }, 20000);
+        }, time);
     })
 }
 
