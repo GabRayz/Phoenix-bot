@@ -161,6 +161,7 @@ Command.Play = {
                         console.error(err);
                         resolve(err);
                     }
+                    body = JSON.parse(body);
                     let videoTitle = body.items[0].snippet.title;
                     resolve(videoTitle);
                 })
