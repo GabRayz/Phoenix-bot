@@ -101,8 +101,10 @@ Command.Play = {
         console.log('Current queue: ' + this.queue);
         let song = this.queue.shift();//[0];
         console.log('Next song: ' + song);
+        let url;
         try {
             if (song.startsWith("http")) {
+                url = song;
                 this.stream = this.getStream(song);
             }else {
                 url = await this.getUrlFromName(song, this.Phoenix)
@@ -127,8 +129,13 @@ Command.Play = {
         this.voiceHandler = this.voiceConnection.playStream(this.stream);
         console.log('Playing...');
         this.isPlaying = true;
+        let title = await this.GetNameFromUrl(url);
+        if(title) {
+            this.Phoenix.bot.user.setActivity(title);
+        }
 
         this.voiceHandler.once('end', (reason) => {
+            this.Phoenix.bot.user.setActivity(this.Phoenix.config.activity);
             console.log('End of soung: ' + reason);
             if(!this.isPlaying) return;
 
@@ -143,8 +150,25 @@ Command.Play = {
                 return;
             }
         })
-
-        
+    },
+    GetNameFromUrl(url) {
+        return new Promise(resolve => {
+            if(!url.includes('watch?v=')) return false;
+            let id = url.split('=')[1];
+            try {
+                request('https://www.googleapis.com/youtube/v3/videos?part=snippet&id=' + id + '&maxResults=1&key=' + this.Phoenix.config.ytapikey, (err, res, body) => {
+                    if(err) {
+                        console.error(err);
+                        resolve(err);
+                    }
+                    let videoTitle = body.items[0].snippet.title;
+                    resolve(videoTitle);
+                })
+            }catch(err) {
+                console.error(err);
+                resolve(false);
+            }
+        })
     },
     checkPlaylist() {
         if (this.currentPlaylist.length > 0) {
@@ -161,7 +185,7 @@ Command.Play = {
     },
     getStream(url) {
         console.log('Get stream from url : ' + url);
-        this.Phoenix.sendClean("Musique en cours : " + url, this.textChannel, 60000);
+        // this.Phoenix.sendClean("Musique en cours : " + url, this.textChannel, 60000);
         let stream = youtube(url);
         return stream;
     },
