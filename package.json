@@ -25,6 +25,7 @@
     "help": "^3.0.2",
     "node.js": "0.0.0",
     "opusscript": "0.0.7",
+    "prism-media": "github:hydrabolt/prism-media",
     "qs": "^6.8.0",
     "querystring": "^0.2.0",
     "request": "^2.88.0",
