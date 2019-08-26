@@ -137,8 +137,13 @@ Command.Play = {
         this.isPlaying = true;
         let title = await this.GetNameFromUrl(url);
         if(title) {
-            this.Phoenix.bot.user.setActivity(title);
+            this.Phoenix.bot.user.setActivity("Loading...");
         }
+        this.voiceHandler.on("start", () => {
+            if(title) {
+                this.Phoenix.bot.user.setActivity(title);
+            }   
+        })
 
         this.voiceHandler.once('end', (reason) => {
             this.Phoenix.bot.user.setActivity(this.Phoenix.config.activity);
