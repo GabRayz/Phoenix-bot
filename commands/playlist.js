@@ -67,6 +67,9 @@ Command.Playlist = {
             case "play":
                 if (args.length > 1) this.play(args[1], msg);
                 break;
+            case "stop":
+                this.stop();
+                break;
             case "delete":
                 if (args.length > 1) this.delete(args[1], msg.author);
                 break;
@@ -161,6 +164,10 @@ Command.Playlist = {
         console.log('Playing playlist: ' + playlistName);
 
         Command.Play.start(this.Phoenix, msg);
+    },
+    stop: function() {
+        Command.Play.currentPlaylist = [];
+        Command.Play.currentPlaylistName = "";
     },
     delete(playlistName, user) {
         let playlist = {};
