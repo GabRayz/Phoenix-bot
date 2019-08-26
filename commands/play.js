@@ -93,7 +93,11 @@ Command.Play = {
         console.log("Queueing: " + name);
         this.queue.push(name);
     },
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    },
     async nextSong() {
+        await this.sleep(200);
         console.log('Choosing next song...');
         if(!this.queue.length > 0) {
             if(this.currentPlaylist.length > 0) {
@@ -135,11 +139,10 @@ Command.Play = {
         this.voiceHandler.setVolume(this.volume);
         console.log('Playing...');
         this.isPlaying = true;
-        let title = await this.GetNameFromUrl(url);
-        if(title) {
-            this.Phoenix.bot.user.setActivity("Loading...");
-        }
-        this.voiceHandler.on("start", () => {
+        this.Phoenix.bot.user.setActivity("Loading...");
+
+        this.voiceHandler.on("start", async () => {
+            let title = await this.GetNameFromUrl(url);
             if(title) {
                 this.Phoenix.bot.user.setActivity(title);
             }   
