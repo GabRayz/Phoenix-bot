@@ -113,7 +113,8 @@ Command.Play = {
         let url;
         try {
             if(song.id) {
-                url = "https://youtube.com/watch?v=" + id;
+                url = "https://youtube.com/watch?v=" + song.id;
+                this.stream = this.getStream(url);
             }else if (song.startsWith("http")) {
                 url = song;
                 this.stream = this.getStream(song);
