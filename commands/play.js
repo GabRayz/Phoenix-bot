@@ -112,7 +112,7 @@ Command.Play = {
         console.log('Next song: ' + song);
         let url;
         try {
-            if(song.id) {
+            if(typeof song.id !== 'undefined') {
                 url = "https://youtube.com/watch?v=" + song.id;
                 this.stream = this.getStream(url);
             }else if (song.startsWith("http")) {
@@ -128,6 +128,7 @@ Command.Play = {
         } catch (error) {
             console.error(error);
             this.textChannel.send("Oups, j'ai des problèmes :/");
+            this.nextSong();
             return;
         }
         
