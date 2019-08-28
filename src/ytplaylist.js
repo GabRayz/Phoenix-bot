@@ -78,11 +78,15 @@ module.exports = class YTplaylist {
     }
 
     static getVideos(items) {
-        let videosID = []
+        let videos = []
         items.forEach(item => {
-            videosID.push(item.snippet.title)
+            let video = {
+                name: item.snippet.title,
+                id: item.id.videoId
+            }
+            videos.push(video);
         });
         console.log('Videos ids extracted.');
-        return videosID;
+        return videos;
     }
 }

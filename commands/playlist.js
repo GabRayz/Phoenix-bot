@@ -122,8 +122,8 @@ Command.Playlist = {
         }
         return res;
     },
-    add(song, playlistName, user, log = true) {
-        console.log("Adding " + song + " to playlist " + playlistName);
+    add(songName, playlistName, user, log = true, songId = "") {
+        console.log("Adding " + songName + " to playlist " + playlistName);
         let playlist = {};
         try {
             playlist = require('../../playlists/' + playlistName + '.json');
@@ -137,7 +137,11 @@ Command.Playlist = {
 
         if(!this.checkAuthors(playlist, user)) return false;
 
-        playlist.items.push(song)
+        let music = {
+            name: songName,
+            id: songId
+        }
+        playlist.items.push(music)
         let text = JSON.stringify(playlist);
         fs.writeFile("../playlists/" + playlistName + ".json", text, (err) => {
             if(err) {
@@ -219,7 +223,10 @@ Command.Playlist = {
         let msgs = [];
         let msg = playlistName + ": playlist de " + playlist.authors[0] + " | ";
         playlist.items.forEach(song => {
-            msg += song + ", ";
+            if (song.name)
+                msg += song.name + ", ";
+            else
+                msg += song + ", ";
             if(msg.length > 1700) {
                 msgs.push(msg);
                 msg = "";

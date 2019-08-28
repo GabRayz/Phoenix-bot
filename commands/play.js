@@ -108,11 +108,13 @@ Command.Play = {
         }
         // Get the stream
         console.log('Current queue: ' + this.queue);
-        let song = this.queue.shift();//[0];
+        let song = this.queue.shift();
         console.log('Next song: ' + song);
         let url;
         try {
-            if (song.startsWith("http")) {
+            if(song.id) {
+                url = "https://youtube.com/watch?v=" + id;
+            }else if (song.startsWith("http")) {
                 url = song;
                 this.stream = this.getStream(song);
             }else {
@@ -142,10 +144,14 @@ Command.Play = {
         this.Phoenix.bot.user.setActivity("Loading...");
 
         this.voiceHandler.on("start", async () => {
-            let title = await this.GetNameFromUrl(url);
-            if(title) {
-                this.Phoenix.bot.user.setActivity(title);
-            }   
+            if(song.name) {
+                this.Phoenix.bot.user.setActivity(song.name);
+            }else {
+                let title = await this.GetNameFromUrl(url);
+                if(title) {
+                    this.Phoenix.bot.user.setActivity(title);
+                }
+            }
         })
 
         this.voiceHandler.once('end', (reason) => {
