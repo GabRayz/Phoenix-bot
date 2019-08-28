@@ -24,16 +24,24 @@ module.exports = class YTplaylist {
         let id = url.split('=')[1];
         let videos = await this.GetPlaylist(id);
         if(videos) {
-            videos.forEach(video => {
-                let res = Command.Playlist.add(video, playlistName, user, false);
-                if(!res){
-                    Command.Playlist.textChannel.send("Oh, une erreur :/");
-                    return;
-                }
-            })
+            await this.AddToPL(videos, playlistName, user);
             console.log('Playlist imported !');
             Command.Playlist.textChannel.send("Playlist importée !");
         }
+    }
+
+    static async AddToPL(videos, playlistName, user) {
+        return new Promise(async resolve => {
+            for(let i = 0; i < videos.length; i++) {
+                let video = videos[i];
+                let res = await Command.Playlist.add(video.name, playlistName, user, false, video.id);
+                if(!res){
+                    Command.Playlist.textChannel.send("Oh, une erreur :/");
+                }
+            }
+            resolve(true);
+        })
+        
     }
 
     static GetPlaylist(id) {
@@ -82,7 +90,7 @@ module.exports = class YTplaylist {
         items.forEach(item => {
             let video = {
                 name: item.snippet.title,
-                id: item.id.videoId
+                id: item.snippet.resourceId.videoId
             }
             videos.push(video);
         });

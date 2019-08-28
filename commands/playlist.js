@@ -123,36 +123,40 @@ Command.Playlist = {
         return res;
     },
     add(songName, playlistName, user, log = true, songId = "") {
-        console.log("Adding " + songName + " to playlist " + playlistName);
-        let playlist = {};
-        try {
-            playlist = require('../../playlists/' + playlistName + '.json');
-        }catch (err) {
-            if(log)
-                this.Phoenix.sendClean('Cette playlist n\'existe pas :/', this.textChannel, 20000)
-            console.log("Cannot find playlist " + playlistName);
-            console.error(err);
-            return false;
-        }
-
-        if(!this.checkAuthors(playlist, user)) return false;
-
-        let music = {
-            name: songName,
-            id: songId
-        }
-        playlist.items.push(music)
-        let text = JSON.stringify(playlist);
-        fs.writeFile("../playlists/" + playlistName + ".json", text, (err) => {
-            if(err) {
-                console.error(err)
-            }else {
+        return new Promise(resolve => {
+            console.log("Adding " + songName + " to playlist " + playlistName);
+            let playlist = {};
+            try {
+                playlist = require('../../playlists/' + playlistName + '.json');
+            }catch (err) {
                 if(log)
-                    this.Phoenix.sendClean("Musique ajoutée à la playlist", this.textChannel, 10000);
-                console.log('Music added to playlist');
+                    this.Phoenix.sendClean('Cette playlist n\'existe pas :/', this.textChannel, 20000)
+                console.log("Cannot find playlist " + playlistName);
+                console.error(err);
+                resolve(false);
             }
-        });
-        return true;
+
+            if(!this.checkAuthors(playlist, user)) resolve(false);
+
+            let music = {
+                name: songName,
+                id: songId
+            }
+            playlist.items.push(music)
+            let text = JSON.stringify(playlist);
+            fs.writeFile("../playlists/" + playlistName + ".json", text, (err) => {
+                if(err) {
+                    console.error(err)
+                    resolve(false);
+                }else {
+                    if(log)
+                        this.Phoenix.sendClean("Musique ajoutée à la playlist", this.textChannel, 10000);
+                    console.log('Music added to playlist');
+                    resolve(true);
+                }
+            });
+        })
+        
     },
     play(playlistName, msg) {
         let playlist = [];
