@@ -20,16 +20,18 @@
     "discord.js": "^11.5.1",
     "ffmpeg": "0.0.4",
     "fs": "0.0.1-security",
-    "google-auth-library": "^5.2.0",
+    "google-auth-library": "^5.9.2",
     "googleapis": "^42.0.0",
     "help": "^3.0.2",
+    "m3u8stream": "^0.6.4",
     "node.js": "0.0.0",
     "opusscript": "0.0.7",
+    "parse-time": "^0.1.4",
     "prism-media": "github:hydrabolt/prism-media",
-    "qs": "^6.8.0",
+    "qs": "^6.9.1",
     "querystring": "^0.2.0",
     "request": "^2.88.0",
     "send": "^0.17.1",
-    "ytdl-core": "^0.29.5"
+    "ytdl-core": "^1.0.7"
   }
 }

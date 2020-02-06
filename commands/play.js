@@ -216,9 +216,9 @@ Command.Play = {
         console.log('Get url from name : ' + name);
         return new Promise(resolve => {
             request('https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + name + '&key=' + Phoenix.config.ytapikey, async (err, res, body) => {
-                let videos = JSON.parse(body).items;
-                let video = videos.find(vid => vid.id.kind == "youtube#video");
                 try {
+                    let videos = JSON.parse(body).items;
+                    let video = videos.find(vid => vid.id.kind == "youtube#video");
                     let id = video.id.videoId;
                     if(!id) {
                         this.textChannel.send("Je n'ai pas trouvé la vidéo :c");
