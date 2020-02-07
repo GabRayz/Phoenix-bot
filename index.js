@@ -5,35 +5,36 @@ const {google} = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
 const request = require('request');
 
+// Import config
+var config = {};
+config = require('./config.json');
+
 // Create bot client
 const bot = new Discord.Client();
-
-// Import config
-var Config = {};
-Config = require('./config.json');
-
 // Log in
 console.log('Connection...');
-bot.login(Config.login);
-module.exports = bot;
- 
+bot.login(config.login);
+
+let Phoenix = {
+    bot: bot,
+    config: config
+}
+
+module.exports = Phoenix;
+
 // Import commands
 const Command = require('./commands/command');
 
-var Phoenix = {}
-Phoenix.bot = bot;
-Phoenix.config = Config;
-
 bot.on('ready', () => {
     console.log('Phoenix bot ready to operate');
-    bot.user.setActivity(Config.activity).catch((e) => console.error(e))
-    bot.user.setUsername(Config.name)
+    bot.user.setActivity(config.activity).catch((e) => console.error(e))
+    bot.user.setUsername(config.name)
 
     // Find the default guild and test Channel
-    Phoenix.guild = bot.guilds.find(guild => guild.id == Config.defaultGuild);
-    Phoenix.testChannel = Phoenix.guild.channels.find(chan => chan.id == Config.testChannel);
+    Phoenix.guild = bot.guilds.find(guild => guild.id == config.defaultGuild);
+    Phoenix.testChannel = Phoenix.guild.channels.find(chan => chan.id == config.testChannel);
 
-    if (Config.connectionAlert == true) {
+    if (config.connectionAlert == true) {
         Phoenix.testChannel.send("Phoenix connecté");
     }
 });
@@ -49,7 +50,7 @@ Phoenix.sendClean = function(msg, channel, time = 20000) {
 }
 
 bot.on('message', (msg) => {
-    if (msg.content.startsWith(Config.prefix)) {
+    if (msg.content.startsWith(config.prefix)) {
         console.log(msg.author.username + ' : ' + msg.content);
         // let message = new Message(msg);
         let msgParts = msg.content.split(' ');
@@ -60,7 +61,7 @@ bot.on('message', (msg) => {
 });
 
 function ReadCommand(message, command) {
-    if(Config.everyoneBlackListed && GetGuildMember(message.author).roles.length == 0) {
+    if(config.everyoneBlackListed && GetGuildMember(message.author).roles.length == 0) {
         return;
     }
 
