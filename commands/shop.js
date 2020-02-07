@@ -6,10 +6,6 @@ module.exports = class Shop extends Command {
     static alias = [
         "shop"
     ]
-    static channelOption = {
-        whitelist: ['409429222138970113', '401491785077096459', '401494831169536030'],
-        blacklist: []
-    }
     static description = "Intéragir avec le marché de Phoenix"
     static data = [];
 

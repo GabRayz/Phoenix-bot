@@ -67,7 +67,7 @@ function ReadCommand(message, command) {
 
     Object.keys(Command).forEach(element => {
         if (Command[element].match(command)) {
-            if(!Command[element].checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            if (!searchPermissions(Command[element], message)) {
                 PermissionDenied(message);
                 return;
             }
@@ -75,6 +75,39 @@ function ReadCommand(message, command) {
             return;
         }
     });
+}
+
+function searchPermissions(command, message) {
+    for (let name of Object.keys(config.permissions)) {
+        if (name == command.name) {
+            let perm = config.permissions[name];
+            console.log(perm);
+            return checkPermissions(perm, message);
+        }
+    };
+    let perm = config.permissions.default;
+    return checkPermissions(perm, message);
+}
+
+function checkPermissions(perm, message) {
+    let role = GetGuildMember(message.author).highestRole;
+    // check blacklists
+    if(perm.groupOptions.blacklist.length > 0 && perm.groupOptions.blacklist.includes(role.name)) {
+        return false;
+    }
+    if(perm.channelOptions.blacklist.length > 0 && perm.channelOptions.blacklist.includes(message.channel.id)) {
+        return false;
+    }
+
+    // check whitelists
+    if(perm.groupOptions.whitelist.length > 0 && !perm.groupOptions.whitelist.includes(role.name)) {
+        return false;
+    }
+    if(perm.channelOptions.whitelist.length > 0 && !perm.channelOptions.whitelist.includes(message.channel.id)) {
+        return false;
+    }
+
+    return true;
 }
 
 function PermissionDenied(msg) {

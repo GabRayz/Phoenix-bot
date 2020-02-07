@@ -13,11 +13,6 @@ module.exports = class Off extends Command {
     ];
     static description = "Redémarre le bot";
 
-    static groupOption = {
-        whitelist: ["Roi"],
-        blacklist: []
-    }
-
     static call(message, Phoenix) {
         console.log('Phoenix disconnected.')
         Phoenix.bot.destroy();
