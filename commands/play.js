@@ -163,7 +163,7 @@ module.exports = class Play extends Command {
             if(!this.isPlaying) return;
 
             this.voiceHandler = null;
-            if(this.queue.length > 0 || Command.Play.currentPlaylist.length > 0) {
+            if(this.queue.length > 0 || Play.currentPlaylist.length > 0) {
                 this.nextSong()
             }else {
                 this.isPlaying = false;

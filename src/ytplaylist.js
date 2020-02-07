@@ -1,4 +1,5 @@
 let Command = require('../commands/command.js');
+let Play = require('../commands/play');
 // require('../commands/play.js');
 // require('../commands/playlist.js');
 const request = require('request');
@@ -12,7 +13,7 @@ module.exports = class YTplaylist {
         let videos = await this.GetPlaylist(id);
         if(videos) {
             videos.forEach(video => {
-                Command.Play.addToQueueString(video);
+                Play.addToQueueString(video);
             })
         }
         console.log('Playlist enqueued !');
@@ -26,7 +27,7 @@ module.exports = class YTplaylist {
         if(videos) {
             await this.AddToPL(videos, playlistName, user);
             console.log('Playlist imported !');
-            Command.Playlist.textChannel.send("Playlist importée !");
+            Playlist.textChannel.send("Playlist importée !");
         }
     }
 
@@ -34,9 +35,9 @@ module.exports = class YTplaylist {
         return new Promise(async resolve => {
             for(let i = 0; i < videos.length; i++) {
                 let video = videos[i];
-                let res = await Command.Playlist.add(video.name, playlistName, user, false, video.id);
+                let res = await Playlist.add(video.name, playlistName, user, false, video.id);
                 if(!res){
-                    Command.Playlist.textChannel.send("Oh, une erreur :/");
+                    Playlist.textChannel.send("Oh, une erreur :/");
                 }
             }
             resolve(true);
