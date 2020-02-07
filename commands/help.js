@@ -1,60 +1,33 @@
-Command = require('./command.js');
+let Command = require('../src/Command');
+let commands = require('./command');
+let Play = require('./play');
 
-Command.Help = {
-    name: "help",
-    alias: [
+module.exports = class Help extends Command {
+    constructor(author) {
+        this.author = author;
+    }
+
+    static name = 'help';
+    static alias = [
         "help",
         "h"
-    ],
-    groupOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    channelOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    description: "Affiche la liste des commandes",
+    ];
+    static description = "Affiche la liste des commandes";
 
-
-    match: function(command) {
-        return this.alias.includes(command);
-    },
-    checkPerm: function(channel, role) {
-        // check blacklists
-        if(this.groupOption.blacklist.length > 0 && this.groupOption.blacklist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.blacklist.length > 0 && this.channelOption.blacklist.includes(channel.id)) {
-            return false;
-        }
-    
-        // check whitelists
-        if(this.groupOption.whitelist.length > 0 && !this.groupOption.whitelist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.whitelist.length > 0 && !this.channelOption.whitelist.includes(channel.id)) {
-            return false;
-        }
-    
-        return true;
-    },
-
-    show: function(channel) {
-        let text = "Commandes : \n"+
-            "\nhelp: " + Command.Help.description +
-            "\noff: " +  Command.Off.description +
-            "\nclear: " + Command.Clear.description +
-            "\nplay [nom/url]: " + Command.Play.description +
-            "\nskip: " + Command.Skip.description +
-            "\nstop: " + Command.Stop.description +
-            "\nvolume [0-200]: " + Command.Volume.description +
-            "\nplaylist: " + Command.Playlist.description +
-            "\nqueue: " + Command.Queue.description +
-            "\nshop: " + Command.Shop.description +
-            "";
+    static call(msg, Phoenix) {
+        let text = "Commandes : \n\n"+
+        "help: Affiche la liste des commandes\n"+
+        "off: turn the bot off\n"+
+        "clear: undefined\n"+
+        "play [nom/url]: Ajoute une musique à la file d'attente. Démarre la lecture si aucune musique n'est en cours.\n"+
+        "skip: Passer à la prochaine musique de la file d'attente\n"+
+        "stop: Arrete la musique et deconnecte le bot du salon vocal.\n"+
+        "volume [0-200]: Changer le volume\n"+
+        "playlist: Gérer les playlist. !playlist help\n"+
+        "queue: Affiche la liste d'attente des musiques.\n"+
+        "shop: Intéragir avec le marché de Phoenix";
         
-        channel.send(text, {
+        msg.channel.send(text, {
             code: true
         })
         .catch(console.error);

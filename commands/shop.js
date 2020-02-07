@@ -1,57 +1,30 @@
-Command = require('./command.js');
+let Command = require('../src/Command');
 const request = require('request');
 
-Command.Shop = {
-    name: "shop",
-    alias: [
+module.exports = class Shop extends Command {
+    static name = "shop";
+    static alias = [
         "shop"
-    ],
-    groupOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    channelOption: {
+    ]
+    static channelOption = {
         whitelist: ['409429222138970113', '401491785077096459', '401494831169536030'],
         blacklist: []
-    },
-    description: "Intéragir avec le marché de Phoenix",
-    data: [],
+    }
+    static description = "Intéragir avec le marché de Phoenix"
+    static data = [];
 
-
-    match: function(command) {
-        return this.alias.includes(command);
-    },
-    checkPerm: function(channel, role) {
-        // check blacklists
-        if(this.groupOption.blacklist.length > 0 && this.groupOption.blacklist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.blacklist.length > 0 && this.channelOption.blacklist.includes(channel.id)) {
-            return false;
-        }
-    
-        // check whitelists
-        if(this.groupOption.whitelist.length > 0 && !this.groupOption.whitelist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.whitelist.length > 0 && !this.channelOption.whitelist.includes(channel.id)) {
-            return false;
-        }
-    
-        return true;
-    },
-    read: async function(msg, args, Phoenix) {
+    static async call(msg, Phoenix) {
         this.Phoenix = Phoenix;
         this.textChannel = msg.channel;
         if(this.data.length == 0)
             this.data = await this.get();
         
-        if(args.length > 0)
-            this.showCategory(args[0])
+        if(msg.args.length > 0)
+            this.showCategory(msg.args[0])
         else
             this.showCategories();
-    },
-    showCategories: function() {
+    }
+    static showCategories () {
         console.log("Show categories.");
         let res = "**Liste des catégories :**";
         let i = 1;
@@ -61,8 +34,8 @@ Command.Shop = {
         })
         res += "\n" + this.Phoenix.config.prefix + "shop [id categorie] : Affiche les items de la catégorie";
         this.textChannel.send(res);
-    },
-    showCategory: function(id) {
+    }
+    static showCategory(id) {
         if(id > this.data.length) return false;
         let categorie = this.data[id - 1];
         let res = "Catégorie " + id + " : " + categorie.name;
@@ -71,8 +44,8 @@ Command.Shop = {
             res += '\n' + item.name + ': ' + item.prices.buyUnit + ' / ' + item.prices.buyStack + ' / ' + item.prices.sellUnit + ' / ' + item.prices.sellStack;
         })
         this.textChannel.send(res);
-    },
-    get: async function() {
+    }
+    static async get() {
         console.log('[Sheet] Getting data...')
         return new Promise(resolve => {
             request('https://sheets.googleapis.com/v4/spreadsheets/1az14S1w-GIS9JuWpne93xJs6aFAHMfdWG86poYaQH8A?includeGridData=true&key=' + this.Phoenix.config.sheetskey, (err, res, body) => {
@@ -98,8 +71,8 @@ Command.Shop = {
                 resolve(this.parse(rows));
             })
         })
-    },
-    parse: function(rows) {
+    }
+    static parse(rows) {
         console.log('[Sheeet] Parsing data...');
         function category(name) {
             this.name = name;

@@ -1,6 +1,17 @@
 let Config = {}
 Config = require('../config.json');
 
-var Command = Command || {
-
+module.exports = {
+    Clear: require('./clear'),
+    Off: require('./off'),
+    Pause: require('./pause'),
+    Play: require('./play'),
+    Playlist: require('./playlist'),
+    Queue: require('./queue'),
+    Resume: require('./resume'),
+    Shop: require('./shop'),
+    Skip: require('./skip'),
+    Stop: require('./stop'),
+    Volume: require('./volume'),
+    Help: require('./help'),
 }

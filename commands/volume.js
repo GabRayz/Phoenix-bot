@@ -1,50 +1,19 @@
-Command = require('./command.js');
-require('./play');
+let Command = require('../src/Command');
+let Play = require('./play');
 
-Command.Volume = {
-    name: "volume",
-    alias: [
+module.exports = class Volume extends Command {
+    name = "volume";
+    alias = [
         "volume"
-    ],
-    groupOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    channelOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    description: "Changer le volume",
+    ];
+    description = "Changer le volume";
 
-
-    match: function(command) {
-        return this.alias.includes(command);
-    },
-    checkPerm: function(channel, role) {
-        // check blacklists
-        if(this.groupOption.blacklist.length > 0 && this.groupOption.blacklist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.blacklist.length > 0 && this.channelOption.blacklist.includes(channel.id)) {
-            return false;
-        }
-    
-        // check whitelists
-        if(this.groupOption.whitelist.length > 0 && !this.groupOption.whitelist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.whitelist.length > 0 && !this.channelOption.whitelist.includes(channel.id)) {
-            return false;
-        }
-    
-        return true;
-    },
-    set: function(msg, Phoenix, args) {
-        if(!args.length > 0) {
+    static call(msg, Phoenix) {
+        if(!msg.args.length > 0) {
             Phoenix.sendClean('Volume actuel: ' + Command.Play.volume * 100, msg.channel, 5000);
             return;
         }
-        let volume = args[0];
+        let volume = msg.args[0];
         if(Command.Play.voiceHandler && !Command.Play.voiceHandler.paused) {
             if (volume >= 0 && volume <= 200) {
                 Command.Play.voiceHandler.setVolume(volume/100);

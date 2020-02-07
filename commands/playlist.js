@@ -1,89 +1,61 @@
 const fs = require('fs');
 const YTplaylist = require('../src/ytplaylist');
-Command = require('./command.js');
-// require('./play.js');
+let Command = require('../src/Command');
+let Play = require('./play.js');
 
-Command.Playlist = {
-    name: "playlist",
-    alias: [
+module.exports = class Playlist extends Command {
+    constructor(author) {
+        this.author = author;
+    }
+    static name = "playlist";
+    static alias = [
         "playlist",
         "pl"
-    ],
-    groupOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    channelOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    description: "Gérer les playlist. !playlist help",
-    path: '../../playlists/',
+    ]
+    static description = "Gérer les playlist. !playlist help";
+    static path = '../../playlists/';
 
-
-    match: function(command) {
-        return this.alias.includes(command);
-    },
-    checkPerm: function(channel, role) {
-        // check blacklists
-        if(this.groupOption.blacklist.length > 0 && this.groupOption.blacklist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.blacklist.length > 0 && this.channelOption.blacklist.includes(channel.id)) {
-            return false;
-        }
-    
-        // check whitelists
-        if(this.groupOption.whitelist.length > 0 && !this.groupOption.whitelist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.whitelist.length > 0 && !this.channelOption.whitelist.includes(channel.id)) {
-            return false;
-        }
-    
-        return true;
-    },
-    read: function(msg, args, Phoenix) {
+    static call(msg, Phoenix) {
         this.textChannel = msg.channel;
         this.Phoenix = Phoenix;
-        switch(args[0]) {
+        switch(msg.args[0]) {
             case "create":
-                if (args.length > 1) this.create(args[1], msg.author);
+                if (msg.args.length > 1) this.create(msg.args[1], msg.author);
                 break;
             case "list":
                 this.list();
                 break;
             case "add":
-                if (args.length > 2) {
-                    if(args[2].includes('playlist?list=')) {
-                        YTplaylist.ImportPlaylist(args[2], args[1], msg.author);
-                    }else if(args[2].includes('spotify.com')) {
-                        Command.Spotify.read(args[2], args[1], msg.author);
+                if (msg.args.length > 2) {
+                    if(msg.args[2].includes('playlist?list=')) {
+                        YTplaylist.ImportPlaylist(msg.args[2], msg.args[1], msg.author);
+                    }else if(msg.args[2].includes('spotify.com')) {
+                        Command.Spotify.read(msg.args[2], msg.args[1], msg.author);
                     }else {
-                        this.add(this.getSoungName(args), args[1], msg.author);
+                        this.add(this.getSoungName(msg.args), msg.args[1], msg.author);
                     }
                 }
                 break;
             case "play":
-                if (args.length > 1) this.play(args[1], msg);
+                if (msg.args.length > 1) this.play(msg.args[1], msg);
                 break;
             case "stop":
                 this.stop();
                 break;
             case "delete":
-                if (args.length > 1) this.delete(args[1], msg.author);
+                if (msg.args.length > 1) this.delete(msg.args[1], msg.author);
                 break;
             case "help":
                 this.showHelp();
                 break
             case "see":
-                    if (args.length > 1) this.see(args[1]);
+                    if (msg.args.length > 1) this.see(msg.args[1]);
                     break;
             default:
                 return;
         }
-    },
-    create(name, user) {
+    }
+    static create(name, user) {
         name = name.split('.')[0];
         let content = '{"authors": ["' + user.username + '"], "items": []}';
         fs.writeFile('../playlists/' + name + '.json', content, (err) => {
@@ -95,8 +67,8 @@ Command.Playlist = {
                 this.textChannel.send('Erreur lors de la création de la playlist');
             }
         })
-    },
-    list() {
+    }
+    static list() {
         fs.readdir('../playlists/', (err, files) => {
             if(err) {
                 console.error(err);
@@ -113,16 +85,16 @@ Command.Playlist = {
             }
             this.textChannel.send(msg);
         })
-    },
-    getSoungName: function(args) {
+    }
+    static getSoungName(args) {
         let res = "";
         for (let i = 2; i < args.length; i++) {
             const word = args[i];
             res += word + " ";
         }
         return res;
-    },
-    add(songName, playlistName, user, log = true, songId = "") {
+    }
+    static add(songName, playlistName, user, log = true, songId = "") {
         return new Promise(resolve => {
             console.log("Adding " + songName + " to playlist " + playlistName);
             let playlist = {};
@@ -157,8 +129,8 @@ Command.Playlist = {
             });
         })
         
-    },
-    play(playlistName, msg) {
+    }
+    static play(playlistName, msg) {
         let playlist = [];
         try {
             playlist = require('../../playlists/' + playlistName + '.json');
@@ -168,17 +140,17 @@ Command.Playlist = {
             this.Phoenix.sendClean("Je n'ai pas trouvé cette playlist.", this.textChannel, 5000);
             return;
         }
-        Command.Play.currentPlaylist = playlist.items;
-        Command.Play.currentPlaylistName = playlistName;
+        Play.currentPlaylist = playlist.items;
+        Play.currentPlaylistName = playlistName;
         console.log('Playing playlist: ' + playlistName);
 
-        Command.Play.start(this.Phoenix, msg);
-    },
-    stop: function() {
-        Command.Play.currentPlaylist = [];
-        Command.Play.currentPlaylistName = "";
-    },
-    delete(playlistName, user) {
+        Play.start(this.Phoenix, msg);
+    }
+    static stop() {
+        Play.currentPlaylist = [];
+        Play.currentPlaylistName = "";
+    }
+    static delete(playlistName, user) {
         let playlist = {};
         try {
             playlist = require("../../playlists/" + playlistName + ".json")
@@ -199,8 +171,8 @@ Command.Playlist = {
                 this.Phoenix.sendClean("Playlist supprimée.", this.textChannel, 15000);
             }
         })
-    },
-    showHelp() {
+    }
+    static showHelp() {
         let msg = "Gestion de playlist : " +
             "\n" + this.Phoenix.config.prefix + "playlist list: Liste toutes les playlist" + 
             "\n" + this.Phoenix.config.prefix + "playlist create {nom}: Créer une nouvelle playlist" + 
@@ -210,13 +182,13 @@ Command.Playlist = {
             "\n" + this.Phoenix.config.prefix + "playlist see {playlist}: Liste le contenu d'une playlist" + 
             "";
         this.textChannel.send(msg, {code: true});
-    },
-    checkAuthors(playlist, user) {
+    }
+    static checkAuthors(playlist, user) {
         if(playlist.authors.includes(user.username)) return true;
         this.Phoenix.sendClean("Tu n'es pas l'auteur de cette playlist", this.textChannel, 15000);
         return false;
-    },
-    see(playlistName) {
+    }
+    static see(playlistName) {
         let playlist = {};
         try {
             playlist = require('../../playlists/' + playlistName + '.json');

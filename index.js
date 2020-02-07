@@ -18,19 +18,7 @@ bot.login(Config.login);
 module.exports = bot;
  
 // Import commands
-const Off = require('./commands/off.js');
-const Help = require('./commands/help.js');
-const Clear = require('./commands/clear.js');
-const Play = require('./commands/play.js');
-require('./commands/skip.js');
-require('./commands/stop.js');
-require('./commands/playlist.js');
-require('./commands/queue.js');
-require('./commands/shop.js');
-require('./commands/pause.js');
-require('./commands/resume.js');
-require('./commands/spotify.js');
-require('./commands/volume.js');
+const Command = require('./commands/command');
 
 var Phoenix = {}
 Phoenix.bot = bot;
@@ -48,10 +36,6 @@ bot.on('ready', () => {
     if (Config.connectionAlert == true) {
         Phoenix.testChannel.send("Phoenix connecté");
     }
-
-    // GET https://www.googleapis.com/youtube/v3/search?part=snippet&q=Frozen&key={YOUR_API_KEY}
-
-    
 });
 
 Phoenix.sendClean = function(msg, channel, time = 20000) {
@@ -67,117 +51,129 @@ Phoenix.sendClean = function(msg, channel, time = 20000) {
 bot.on('message', (msg) => {
     if (msg.content.startsWith(Config.prefix)) {
         console.log(msg.author.username + ' : ' + msg.content);
+        // let message = new Message(msg);
         let msgParts = msg.content.split(' ');
-        setTimeout(() => {
-            if(!msg.deleted)
-                msg.delete();
-        }, 20000);
-        ReadCommand(msgParts[0].slice(1), msgParts.slice(1), msg);
+        let command = msgParts[0].slice(1);
+        msg.args = msgParts.slice(1);
+        ReadCommand(msg, command);
     }
 });
 
-function ReadCommand(command, args, msg) {
-    if(Config.everyoneBlackListed && GetGuildMember(msg.author).roles.length == 0) {
+function ReadCommand(message, command) {
+    if(Config.everyoneBlackListed && GetGuildMember(message.author).roles.length == 0) {
         return;
     }
-    if (Command.Off.match(command)) {
-        if(!Command.Off.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+
+    Object.keys(Command).forEach(element => {
+        if (Command[element].match(command)) {
+            if(!Command[element].checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+                PermissionDenied(message);
+                return;
+            }
+            Command[element].call(message, Phoenix);
             return;
         }
-        msg.delete()
+    });
+
+    return;
+    if (Command.Off.match(command)) {
+        if(!Command.Off.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
+            return;
+        }
+        message.delete()
         .then(Command.Off.shutdown(Phoenix));
     }
     
     if(Command.Help.match(command)) {
-        if(!Command.Help.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Help.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
-        Command.Help.show(msg.channel);
+        Command.Help.show(message.channel);
     }
 
     if(Command.Clear.match(command)) {
-        if(!Command.Clear.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Clear.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
-        Command.Clear.clear(msg.channel, Phoenix);
+        Command.Clear.clear(message.channel, Phoenix);
     }
 
     if(Command.Play.match(command)) {
-        if(!Command.Play.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Play.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
-        Command.Play.play(msg, args, Phoenix);
+        Command.Play.play(message, args, Phoenix);
     }
     if(Command.Playlist.match(command)) {
-        if(!Command.Playlist.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Playlist.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
-        Command.Playlist.read(msg, args, Phoenix);
+        Command.Playlist.read(message, args, Phoenix);
     }
 
     if(Command.Skip.match(command)) {
-        if(!Command.Skip.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Skip.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
-        Command.Skip.skip(msg, args, Phoenix);
+        Command.Skip.skip(message, args, Phoenix);
     }
     if(Command.Stop.match(command)) {
-        if(!Command.Stop.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Stop.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
-        Command.Stop.stop(msg, args, Phoenix);
+        Command.Stop.stop(message, args, Phoenix);
     }
 
     if(Command.Queue.match(command)) {
-        if(!Command.Queue.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Queue.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
-        Command.Queue.queue(msg, Phoenix);
+        Command.Queue.queue(message, Phoenix);
     }
 
     if(Command.Shop.match(command)) {
-        if(!Command.Shop.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Shop.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
-        Command.Shop.read(msg, args, Phoenix);
+        Command.Shop.read(message, args, Phoenix);
     }
 
     if(Command.Pause.match(command)) {
-        if(!Command.Pause.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Pause.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
         Command.Pause.pause();
     }
 
     if(Command.Resume.match(command)) {
-        if(!Command.Resume.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Resume.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
         Command.Resume.resume();
     }
 
     if(Command.Volume.match(command)) {
-        if(!Command.Volume.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Volume.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
-        Command.Volume.set(msg, Phoenix, args);
+        Command.Volume.set(message, Phoenix, args);
     }
 
     if(Command.Spotify.match(command)) {
-        if(!Command.Spotify.checkPerm(msg.channel, GetGuildMember(msg.author).highestRole)) {
-            PermissionDenied(msg);
+        if(!Command.Spotify.checkPerm(message.channel, GetGuildMember(message.author).highestRole)) {
+            PermissionDenied(message);
             return;
         }
         Command.Spotify.read(args[0]);

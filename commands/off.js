@@ -1,48 +1,24 @@
-Command = require('./command.js');
+let Command = require('../src/Command');
 
-Command.Off = {
-    name: "off",
-    alias: [
+module.exports = class Off extends Command {
+    constructor(author) {
+        this.author = author;
+    }
+    static name = 'off';
+    static alias = [
         "off",
         "shutdown",
         "disconnect",
         "restart"
-    ],
-    groupOption: {
+    ];
+    static description = "Redémarre le bot";
+
+    static groupOption = {
         whitelist: ["Roi"],
         blacklist: []
-    },
-    channelOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    description: "turn the bot off",
+    }
 
-
-    match: function(command) {
-        return this.alias.includes(command);
-    },
-    checkPerm: function(channel, role) {
-        // check blacklists
-        if(this.groupOption.blacklist.length > 0 && this.groupOption.blacklist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.blacklist.length > 0 && this.channelOption.blacklist.includes(channel.id)) {
-            return false;
-        }
-    
-        // check whitelists
-        if(this.groupOption.whitelist.length > 0 && !this.groupOption.whitelist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.whitelist.length > 0 && !this.channelOption.whitelist.includes(channel.id)) {
-            return false;
-        }
-    
-        return true;
-    },
-
-    shutdown: function(Phoenix) {
+    static call(message, Phoenix) {
         console.log('Phoenix disconnected.')
         Phoenix.bot.destroy();
         process.exit(0)

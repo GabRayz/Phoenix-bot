@@ -1,46 +1,16 @@
-Command = require('./command.js');
-require('./play.js');
+let Command = require('../src/Command');
+let Play = require('./play');
 
-Command.Skip = {
-    name: "skip",
-    alias: [
+module.exports = class Skip extends Command {
+    static name = "skip";
+    alias = [
         "skip",
         "next"
-    ],
-    groupOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    channelOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    description: "Passer à la prochaine musique de la file d'attente",
+    ];
+    description = "Passer à la prochaine musique de la file d'attente";
 
 
-    match: function(command) {
-        return this.alias.includes(command);
-    },
-    checkPerm: function(channel, role) {
-        // check blacklists
-        if(this.groupOption.blacklist.length > 0 && this.groupOption.blacklist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.blacklist.length > 0 && this.channelOption.blacklist.includes(channel.id)) {
-            return false;
-        }
-    
-        // check whitelists
-        if(this.groupOption.whitelist.length > 0 && !this.groupOption.whitelist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.whitelist.length > 0 && !this.channelOption.whitelist.includes(channel.id)) {
-            return false;
-        }
-    
-        return true;
-    },
-    skip: function() {
-        Command.Play.skip();
+    static call() {
+        Play.skip();
     }
 }
