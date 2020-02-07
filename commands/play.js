@@ -45,10 +45,6 @@ module.exports = class Play extends Command {
         this.textChannel = message.channel;
         this.Phoenix = Phoenix;
 
-        if(message.args.length > 0 && message.args[0] == 'debug') {
-            console.log(this.voiceHandler);
-            return;
-        }
         if(message.args.length > 0 && message.args[0].startsWith('http') && message.args[0].includes('playlist?list=')) {
             console.log('Importing playlist...');
             YTplaylist.Enqueue(message.args[0], function() {
@@ -66,15 +62,17 @@ module.exports = class Play extends Command {
      * @param {*} message 
      */
     static async start(Phoenix, message) {
-        this.Phoenix = Phoenix;
+        // Do nothing if the voice is already started
         if(!this.isPlaying) {
             console.log("connecting to voice channel");
             this.textChannel = message.channel;
-            this.voiceConnection = await this.connectToVoiceChannel(message.member.voiceChannel);
-            if(!this.voiceConnection) return;
-            this.voiceChannel = message.member.voiceChannel;
-
-            this.nextSong();
+            this.connectToVoiceChannel(message.member.voiceChannel).then(voiceConnection => {
+                this.voiceConnection = voiceConnection;
+                this.voiceChannel = message.member.voiceChannel;
+                this.nextSong();
+            }).catch(() => {
+                return;
+            })
         }
     }
 
@@ -140,15 +138,15 @@ module.exports = class Play extends Command {
             this.voiceHandler.end();
         })
 
+        await this.Phoenix.bot.user.setActivity("Loading...");
         this.voiceHandler = this.voiceConnection.playStream(this.stream);
         this.voiceHandler.setVolume(this.volume);
         console.log('Playing...');
         this.isPlaying = true;
-        this.Phoenix.bot.user.setActivity("Loading...");
 
         this.voiceHandler.on("start", async () => {
             if(song.name) {
-                this.Phoenix.bot.user.setActivity(song.name);
+                await this.Phoenix.bot.user.setActivity(song.name);
             }else {
                 let title = await this.GetNameFromUrl(url);
                 if(title) {
@@ -157,8 +155,8 @@ module.exports = class Play extends Command {
             }
         })
 
-        this.voiceHandler.once('end', (reason) => {
-            this.Phoenix.bot.user.setActivity(this.Phoenix.config.activity);
+        this.voiceHandler.once('end', async (reason) => {
+            await this.Phoenix.bot.user.setActivity(this.Phoenix.config.activity);
             console.log('End of soung: ' + reason);
             if(!this.isPlaying) return;
 
@@ -244,18 +242,21 @@ module.exports = class Play extends Command {
     }
 
     static connectToVoiceChannel(channel) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             if(!channel) {
                 this.textChannel.send("Tu n'es pas connecté à un channel vocal ='(");
-                console.log('user not connected to a voice channel');
-                resolve(false);
+                console.log('User not connected to a voice channel');
+                reject();
             }
             channel.join()
             .then(connection => {
                 console.log('connected to voice channel');
                 resolve(connection);
             })
-            .catch(console.error);
+            .catch((error) => {
+                console.error(error);
+                reject();
+            });
         })
     }
 
