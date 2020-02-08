@@ -8,5 +8,21 @@
 	"testChannel" : "Default channel id",
 	"everyoneBlackListed" : "true",
 	"ytapikey" : "google api key",
-	"sheetskey": "google api key"
+	"sheetskey": "google api key",
+	"host": {
+		"ip": "ip of the socket server",
+		"port": 8888
+	},
+	"permissions": {
+		"default": {
+			"groupOptions": {
+				"whitelist": [],
+				"blacklist": []
+			},
+			"channelOptions": {
+				"whitelist": [],
+				"blacklist": []
+			}
+		}
+	}
 }
