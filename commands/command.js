@@ -14,4 +14,5 @@ module.exports = {
     Stop: require('./stop'),
     Volume: require('./volume'),
     Help: require('./help'),
+    Link: require('./link')
 }
