@@ -1,7 +1,6 @@
 let Command = require('../commands/command.js');
 let Play = require('../commands/play');
-// require('../commands/play.js');
-// require('../commands/playlist.js');
+let Playlist = require('../commands/playlist');
 const request = require('request');
 let Config = {}
 Config = require('../config.json')

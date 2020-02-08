@@ -1,7 +1,7 @@
 const fs = require('fs');
-const YTplaylist = require('../src/ytplaylist');
+// const YTplaylist = require('../src/ytplaylist');
 let Command = require('../src/Command');
-let Play = require('./play.js');
+let Play = require('./play');
 
 module.exports = class Playlist extends Command {
     constructor(author) {
@@ -28,7 +28,7 @@ module.exports = class Playlist extends Command {
             case "add":
                 if (msg.args.length > 2) {
                     if(msg.args[2].includes('playlist?list=')) {
-                        YTplaylist.ImportPlaylist(msg.args[2], msg.args[1], msg.author);
+                        require('../src/ytplaylist').ImportPlaylist(msg.args[2], msg.args[1], msg.author);
                     }else if(msg.args[2].includes('spotify.com')) {
                         Command.Spotify.read(msg.args[2], msg.args[1], msg.author);
                     }else {
@@ -140,15 +140,15 @@ module.exports = class Playlist extends Command {
             this.Phoenix.sendClean("Je n'ai pas trouvé cette playlist.", this.textChannel, 5000);
             return;
         }
-        Play.currentPlaylist = playlist.items;
-        Play.currentPlaylistName = playlistName;
+        require('./play').currentPlaylist = playlist.items;
+        require('./play').currentPlaylistName = playlistName;
         console.log('Playing playlist: ' + playlistName);
 
-        Play.start(this.Phoenix, msg);
+        require('./play').start(this.Phoenix, msg);
     }
     static stop() {
-        Play.currentPlaylist = [];
-        Play.currentPlaylistName = "";
+        require('./play').currentPlaylist = [];
+        require('./play').currentPlaylistName = "";
     }
     static delete(playlistName, user) {
         let playlist = {};

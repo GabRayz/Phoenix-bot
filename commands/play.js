@@ -107,9 +107,9 @@ module.exports = class Play extends Command {
             }
         }
         // Get the stream
-        console.log('Current queue: ' + this.queue);
+        console.log('Current queue: ', this.queue);
         let song = this.queue.shift();
-        console.log('Next song: ' + song);
+        console.log('Next song: ', song);
         let url;
         try {
             if(typeof song.id !== 'undefined') {
@@ -138,6 +138,9 @@ module.exports = class Play extends Command {
             console.error(err);
             this.voiceHandler.end();
         })
+        this.stream.on('end', () => {
+            console.log('Stream ended');
+        });
 
         await this.Phoenix.bot.user.setActivity("Loading...");
         this.voiceHandler = this.voiceConnection.playStream(this.stream);
@@ -155,7 +158,15 @@ module.exports = class Play extends Command {
                 }
             }
         })
-
+        this.voiceConnection.on('failed', (reason) => {
+            console.error('Voice connection failed: ', reason);
+        })
+        this.voiceConnection.on('error', (reason) => {
+            console.error('Voice connection error: ', reason);
+        })
+        this.voiceHandler.on('error', (reason) => {
+            console.error('Voice handler error: ', reason);
+        })
         this.voiceHandler.once('end', async (reason) => {
             await this.Phoenix.bot.user.setActivity(this.Phoenix.config.activity);
             console.log('End of soung: ' + reason);
@@ -216,7 +227,10 @@ module.exports = class Play extends Command {
     static getStream(url) {
         console.log('Get stream from url : ' + url);
         // this.Phoenix.sendClean("Musique en cours : " + url, this.textChannel, 60000);
-        let stream = youtube(url);
+        let stream = youtube(url, {
+            // filter: "audioonly",
+            highWaterMark: 1<<25
+        });
         return stream;
     }
 
