@@ -62,6 +62,7 @@ module.exports = class Play extends Command {
      * @param {*} message 
      */
     static async start(Phoenix, message) {
+        this.Phoenix = Phoenix;
         // Do nothing if the voice is already started
         if(!this.isPlaying) {
             console.log("connecting to voice channel");
