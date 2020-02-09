@@ -11,11 +11,17 @@ module.exports = class Clear extends Command {
     ];
     static description = "Nettoie le chat des commandes bot";
 
-    static call(message, Phoenix) {
+    static async call(message, Phoenix) {
         let messages = message.channel.messages.filter(msg => msg.author.id == Phoenix.bot.user.id || msg.content.startsWith(Phoenix.config.prefix));
-        messages.forEach(message => {
-            message.delete();
-        });
-        console.log('Deleted old messages');
+        for(let msg of messages) {
+            await this.sleep(1000);
+            msg[1].delete().catch(err => {
+                console.error(err);
+            })
+        }
+    }
+
+    static sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
