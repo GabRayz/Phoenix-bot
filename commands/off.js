@@ -13,9 +13,9 @@ module.exports = class Off extends Command {
     ];
     static description = "Redémarre le bot";
 
-    static call(message, Phoenix) {
+    static async call(message, Phoenix) {
+        await Phoenix.bot.destroy();
         console.log('Phoenix disconnected.')
-        Phoenix.bot.destroy();
         process.exit(0)
     }
 }
