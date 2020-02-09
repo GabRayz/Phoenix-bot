@@ -34,6 +34,11 @@ module.exports = class Help extends Command {
             .addField(Phoenix.config.prefix + 'playlist', "Gérer les playlists. `"+Phoenix.config.prefix+"playlist help`.")
             .addField(Phoenix.config.prefix + 'shop', "Intéragir avec le marché de Phoenix.")
             .addBlankField()
-        msg.channel.send(embed);
+        msg.channel.send(embed).catch(err => {
+            if (err.message == 'Missing Permissions') {
+                msg.channel.send('Erreur, mes permissions sont insuffisantes :(');
+            }else
+                console.error(err);
+        })
     }
 }
