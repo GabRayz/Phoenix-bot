@@ -37,6 +37,11 @@ module.exports = class Play extends Command {
     static voiceHandler = null;
 
     /**
+     * Infos on the currently playing video.
+     */
+    static videoInfos = null;
+
+    /**
      * Entry point of the command. Adds to song to the queue and start playing.
      * @param {*} message 
      * @param {*} Phoenix 
@@ -193,7 +198,7 @@ module.exports = class Play extends Command {
                 request('https://www.googleapis.com/youtube/v3/videos?part=snippet&id=' + id + '&maxResults=1&key=' + this.Phoenix.config.ytapikey, (err, res, body) => {
                     if(err) {
                         console.error(err);
-                        resolve(err);
+                        return resolve(err);
                     }
                     body = JSON.parse(body);
                     let videoTitle = body.items[0].snippet.title;
@@ -203,6 +208,19 @@ module.exports = class Play extends Command {
                 console.error(err);
                 resolve(false);
             }
+        })
+    }
+
+    static GetInfos(url) {
+        return new Promise((resolve, reject) => {
+            let id = url.split("watch?v=")[1];
+            youtube.getInfo(id, (err, infos) => {
+                if (err) {
+                    console.error(err);
+                    return reject();
+                }
+                this.videoInfos = infos;
+            })
         })
     }
 
@@ -226,7 +244,7 @@ module.exports = class Play extends Command {
 
     static getStream(url) {
         console.log('Get stream from url : ' + url);
-        // this.Phoenix.sendClean("Musique en cours : " + url, this.textChannel, 60000);
+        this.GetInfos(url);
         let stream = youtube(url, {
             // filter: "audioonly",
             highWaterMark: 1<<25
