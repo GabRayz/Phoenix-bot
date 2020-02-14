@@ -1,41 +1,17 @@
-Command = require('./command.js');
+let Command = require('../src/Command');
 
-Command.Exemple = {
-    name: "exemple",
-    alias: [
-        "exemple"
-    ],
-    groupOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    channelOption: {
-        whitelist: [],
-        blacklist: []
-    },
-    description: "desc",
+module.exports = class Example extends Command {
+    constructor(author) {
+        this.author = author;
+    }
+    static name = 'example';
+    static alias = [
+        "example",
+        "expl"
+    ];
+    static description = "Example for creating a command";
 
-
-    match: function(command) {
-        return this.alias.includes(command);
-    },
-    checkPerm: function(channel, role) {
-        // check blacklists
-        if(this.groupOption.blacklist.length > 0 && this.groupOption.blacklist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.blacklist.length > 0 && this.channelOption.blacklist.includes(channel.id)) {
-            return false;
-        }
-    
-        // check whitelists
-        if(this.groupOption.whitelist.length > 0 && !this.groupOption.whitelist.includes(role.name)) {
-            return false;
-        }
-        if(this.channelOption.whitelist.length > 0 && !this.channelOption.whitelist.includes(channel.id)) {
-            return false;
-        }
-    
-        return true;
+    static async call(message, Phoenix) {
+        // Code . . .
     }
 }
