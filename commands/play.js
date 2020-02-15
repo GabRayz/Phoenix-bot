@@ -40,6 +40,7 @@ module.exports = class Play extends Command {
      * Infos on the currently playing video.
      */
     static videoInfos = null;
+    static videoUrl = null;
 
     /**
      * Entry point of the command. Adds to song to the queue and start playing.
@@ -174,6 +175,8 @@ module.exports = class Play extends Command {
         })
         this.voiceHandler.once('end', async (reason) => {
             await this.Phoenix.bot.user.setActivity(this.Phoenix.config.activity);
+            this.videoInfos = null;
+            this.videoUrl = null;
             console.log('End of soung: ' + reason);
             if(!this.isPlaying) return;
 
@@ -220,6 +223,7 @@ module.exports = class Play extends Command {
                     return reject();
                 }
                 this.videoInfos = infos;
+                this.videoUrl = url;
             })
         })
     }

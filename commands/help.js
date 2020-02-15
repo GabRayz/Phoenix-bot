@@ -29,6 +29,7 @@ module.exports = class Help extends Command {
             .addField(Phoenix.config.prefix + 'stop', "Arrete la musique.")
             .addField(Phoenix.config.prefix + 'pause', "Met la musique en pause.")
             .addField(Phoenix.config.prefix + 'resume', "Reprend la lecture de la musique.")
+            .addField(Phoenix.config.prefix + 'info', 'Informations sur la musique actuelle')
             .addField(Phoenix.config.prefix + 'volume [0-200]', "Règler le volume.")
             .addField(Phoenix.config.prefix + 'queue', "Affiche la liste d'attente.")
             .addField(Phoenix.config.prefix + 'playlist', "Gérer les playlists. `"+Phoenix.config.prefix+"playlist help`.")
