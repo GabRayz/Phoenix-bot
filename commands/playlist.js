@@ -208,6 +208,7 @@ module.exports = class Playlist extends Command {
                 msg = "";
             }
         });
+        msgs.push(msg);
         msgs.forEach(m => this.textChannel.send(m));
     }
 }
