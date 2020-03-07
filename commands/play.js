@@ -140,8 +140,7 @@ module.exports = class Play extends Command {
         
 
         this.stream.on('error', (err) => {
-            console.log("Erreur lors de la lecture :");
-            console.error(err);
+            console.error("Erreur lors de la lecture : ", err);
             this.voiceHandler.end();
         })
         this.stream.on('end', () => {
@@ -149,10 +148,13 @@ module.exports = class Play extends Command {
         });
 
         await this.Phoenix.bot.user.setActivity("Loading...");
-        this.voiceHandler = await this.voiceConnection.playStream(this.stream);
-        this.voiceHandler.setVolume(this.volume);
+        this.voiceHandler = await this.voiceConnection.playStream(this.stream, {volume: this.volume});
         console.log('Playing...');
         this.isPlaying = true;
+
+        this.voiceHandler.on('speaking', () => {
+            console.log('voice Handler speaking');
+        })
 
         this.voiceHandler.on("start", async () => {
             if(song.name) {
@@ -164,23 +166,17 @@ module.exports = class Play extends Command {
                 }
             }
         })
-        this.voiceConnection.on('failed', (reason) => {
-            console.error('Voice connection failed: ', reason);
-        })
-        this.voiceConnection.on('error', (reason) => {
-            console.error('Voice connection error: ', reason);
-        })
-        this.voiceHandler.on('error', (reason) => {
-            console.error('Voice handler error: ', reason);
-        })
+
         this.voiceHandler.once('end', async (reason) => {
             await this.Phoenix.bot.user.setActivity(this.Phoenix.config.activity);
+            this.voiceHandler.destroy();
+            this.voiceHandler = null;
+            this.pushRelatedVideo();
             this.videoInfos = null;
             this.videoUrl = null;
             console.log('End of soung: ' + reason);
             if(!this.isPlaying) return;
 
-            this.voiceHandler = null;
             if(this.queue.length > 0 || Play.currentPlaylist.length > 0) {
                 this.nextSong()
             }else {
@@ -191,6 +187,13 @@ module.exports = class Play extends Command {
                 return;
             }
         })
+    }
+
+    static pushRelatedVideo() {
+        if (this.queue.length == 0 && this.currentPlaylistName == "") {
+            let vid = this.videoInfos.related_videos[0];
+            this.queue.push('https://www.youtube.com/watch?v=' + vid.id);
+        }
     }
 
     static GetNameFromUrl(url) {

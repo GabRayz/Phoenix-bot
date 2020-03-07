@@ -134,10 +134,9 @@ module.exports = class Playlist extends Command {
         let playlist = [];
         try {
             playlist = require('../../playlists/' + playlistName + '.json');
-        }catch(err) {
+        }catch {
             console.error('Playlist not found: ' + playlistName);
-            console.error(err);
-            this.Phoenix.sendClean("Je n'ai pas trouvé cette playlist.", this.textChannel, 5000);
+            this.Phoenix.sendClean("Je n'ai pas trouvé cette playlist.", this.textChannel, 15000);
             return;
         }
         require('./play').currentPlaylist = playlist.items;
