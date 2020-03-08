@@ -141,15 +141,16 @@ module.exports = class Play extends Command {
 
         this.stream.on('error', (err) => {
             console.error("Erreur lors de la lecture : ", err);
-            this.voiceHandler.end();
+            this.textChannel.send("Erreur: " + err.message);
+            // this.voiceHandler.end();
         })
         this.stream.on('end', () => {
             console.log('Stream ended');
         });
 
+        console.log('Playing stream');
         await this.Phoenix.bot.user.setActivity("Loading...");
         this.voiceHandler = await this.voiceConnection.playStream(this.stream, {volume: this.volume});
-        console.log('Playing...');
         this.isPlaying = true;
 
         this.voiceHandler.on('speaking', () => {
@@ -157,6 +158,7 @@ module.exports = class Play extends Command {
         })
 
         this.voiceHandler.on("start", async () => {
+            console.log('Playing...');
             if(song.name) {
                 await this.Phoenix.bot.user.setActivity(song.name);
             }else {
@@ -171,7 +173,7 @@ module.exports = class Play extends Command {
             await this.Phoenix.bot.user.setActivity(this.Phoenix.config.activity);
             this.voiceHandler.destroy();
             this.voiceHandler = null;
-            this.pushRelatedVideo();
+            // this.pushRelatedVideo();
             this.videoInfos = null;
             this.videoUrl = null;
             console.log('End of soung: ' + reason);
@@ -182,7 +184,6 @@ module.exports = class Play extends Command {
             }else {
                 this.isPlaying = false;
                 console.log("No more musics in queue, stop playing.");
-                this.Phoenix.sendClean("File d'attente vide, j'me casse.", this.textChannel, 5000);
                 this.voiceChannel.leave();
                 return;
             }
@@ -218,16 +219,14 @@ module.exports = class Play extends Command {
     }
 
     static GetInfos(url) {
-        return new Promise((resolve, reject) => {
-            let id = url.split("watch?v=")[1];
-            youtube.getInfo(id, (err, infos) => {
-                if (err) {
-                    console.error(err);
-                    return reject();
-                }
-                this.videoInfos = infos;
-                this.videoUrl = url;
-            })
+        let id = url.split("watch?v=")[1];
+        youtube.getInfo(id, (err, infos) => {
+            if (err) {
+                console.error("Error while getting video infos: ", err);
+                return;
+            }
+            this.videoInfos = infos;
+            this.videoUrl = url;
         })
     }
 
@@ -251,7 +250,7 @@ module.exports = class Play extends Command {
 
     static getStream(url) {
         console.log('Get stream from url : ' + url);
-        this.GetInfos(url);
+        this.GetInfos(url)
         let stream = youtube(url, {
             // filter: "audioonly",
             highWaterMark: 1<<25
