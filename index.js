@@ -4,6 +4,7 @@ const ytdl = require('ytdl-core');
 const {google} = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
 const request = require('request');
+require('./src/http');
 
 // Import config
 var config = {};

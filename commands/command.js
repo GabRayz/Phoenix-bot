@@ -16,4 +16,5 @@ module.exports = {
     Help: require('./help'),
     Link: require('./link'),
     Info: require('./info'),
+    Download: require('./download'),
 }

@@ -18,7 +18,9 @@
   "homepage": "https://github.com/GabRayz/Phoenix-bot2#readme",
   "dependencies": {
     "discord.js": "^11.5.1",
+    "express": "^4.17.1",
     "ffmpeg": "0.0.4",
+    "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
     "google-auth-library": "^5.9.2",
     "googleapis": "^42.0.0",

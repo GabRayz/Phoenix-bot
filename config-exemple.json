@@ -13,6 +13,8 @@
 		"ip": "ip of the socket server",
 		"port": 8888
 	},
+	"downloadPort": 8001,
+	"downloadAdress": "http://localhost",
 	"permissions": {
 		"default": {
 			"groupOptions": {
