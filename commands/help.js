@@ -33,6 +33,7 @@ module.exports = class Help extends Command {
             .addField(Phoenix.config.prefix + 'volume [0-200]', "Règler le volume.")
             .addField(Phoenix.config.prefix + 'queue', "Affiche la liste d'attente.")
             .addField(Phoenix.config.prefix + 'playlist', "Gérer les playlists. `"+Phoenix.config.prefix+"playlist help`.")
+            .addField(Phoenix.config.prefix + 'download [{audio|video} [url]]', "Télécharge la vidéo jouée, ou spécifiée en argument.")
             .addField(Phoenix.config.prefix + 'shop', "Intéragir avec le marché de Phoenix.")
             .addBlankField()
         msg.channel.send(embed).catch(err => {
