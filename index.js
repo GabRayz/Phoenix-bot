@@ -133,7 +133,7 @@ function checkIfUpdated()
                 package = require('./package.json');
                 let version = package.version;
                 let embed = new Discord.RichEmbed();
-                embed.setTitle('Nouvelle version: ' + version)
+                embed.setTitle('Phoenix a été mis à jour.')
                     .setColor('ORANGE')
                     .setThumbnail(Phoenix.bot.user.avatarURL)
                     .setFooter('Codé par GabRay');
