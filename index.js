@@ -5,6 +5,7 @@ const {google} = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
 const request = require('request');
 require('./src/http');
+const fs = require('fs');
 
 // Import config
 var config = {};
@@ -38,6 +39,8 @@ bot.on('ready', () => {
     if (config.connectionAlert == true) {
         Phoenix.testChannel.send("Phoenix connecté");
     }
+
+    checkIfUpdated();
 });
 
 Phoenix.sendClean = function(msg, channel, time = 20000) {
@@ -119,4 +122,29 @@ function PermissionDenied(msg) {
 
 function GetGuildMember(user) {
     return Phoenix.guild.members.find(member => member.id == user.id);
+}
+
+function checkIfUpdated()
+{
+    fs.access('temoin', fs.constants.F_OK, (err) => {
+        if (!err) {
+            fs.unlink('temoin', () => {
+                let package = {}
+                package = require('./package.json');
+                let version = package.version;
+                let embed = new Discord.RichEmbed();
+                embed.setTitle('Nouvelle version: ' + version)
+                    .setColor('ORANGE')
+                    .setThumbnail(Phoenix.bot.user.avatarURL)
+                    .setFooter('Codé par GabRay');
+                
+                Phoenix.testChannel.send(embed).catch(err => {
+                    if (err.message == 'Missing Permissions') {
+                        Phoenix.testChannel.send('Erreur, mes permissions sont insuffisantes :(');
+                    }else
+                    console.error(err);
+                })
+            });
+        }
+    })
 }
