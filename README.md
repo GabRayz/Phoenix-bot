@@ -3,12 +3,16 @@
 ## Installation
 This program requires [NodeJS](https://nodejs.org/en/) to function.
 > git clone https://github.com:GabRayz/Phoenix-Bot
+
 Once the project is cloned, install the dependencies.
 > npm i
+
 Install pm2
 > npm i -g pm2
+
 Then, create a `config.json` file from `config-exemple.json`, fill it, and start the bot.
 > pm2 start index.js --name PhoenixBot
+
 > pm2 log PhoenixBot
 
 # Usage
