@@ -15,7 +15,7 @@ Then, create a `config.json` file from `config-exemple.json`, fill it, and start
 
 > pm2 log PhoenixBot
 
-# Usage
+## Usage
 * help
 * play {url|name}: Add a music or a youtube playlist to the queue, and start playing.
 * pause/resume
@@ -34,3 +34,6 @@ Then, create a `config.json` file from `config-exemple.json`, fill it, and start
 * clear: Delete the bot old messages
 * off: Turn the bot off
 * update: Update the bot. Requires that the bot was installed using git
+
+## Updates
+This bot makes an automatic update once a day. If an update has been installed, a notification is sent in the bot channel.
