@@ -129,22 +129,27 @@ function checkIfUpdated()
     fs.access('temoin', fs.constants.F_OK, (err) => {
         if (!err) {
             fs.unlink('temoin', () => {
-                let package = {}
-                package = require('./package.json');
-                let version = package.version;
-                let embed = new Discord.RichEmbed();
-                embed.setTitle('Phoenix a été mis à jour.')
+                Command.Update.readVersion().then(version => {
+                    let embed = new Discord.RichEmbed();
+                    embed.setTitle('Phoenix a été mis à jour.')
+                    .setDescription('v' + version)
                     .setColor('ORANGE')
                     .setThumbnail(Phoenix.bot.user.avatarURL)
                     .setFooter('Codé par GabRay');
-                
-                Phoenix.testChannel.send(embed).catch(err => {
-                    if (err.message == 'Missing Permissions') {
-                        Phoenix.testChannel.send('Erreur, mes permissions sont insuffisantes :(');
-                    }else
-                    console.error(err);
-                })
+                    
+                    Phoenix.testChannel.send(embed).catch(err => {
+                        if (err.message == 'Missing Permissions') {
+                            Phoenix.testChannel.send('Erreur, mes permissions sont insuffisantes :(');
+                        }else
+                        console.error(err);
+                    })
+                }).catch(err, console.error(err));
             });
         }
     })
 }
+
+Command.Update.autoUpdate(Phoenix);
+setInterval(() => {
+    Command.Update.autoUpdate(Phoenix);
+}, 3600 * 24);
