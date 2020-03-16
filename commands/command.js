@@ -9,7 +9,6 @@ module.exports = {
     Playlist: require('./playlist'),
     Queue: require('./queue'),
     Resume: require('./resume'),
-    Shop: require('./shop'),
     Skip: require('./skip'),
     Stop: require('./stop'),
     Volume: require('./volume'),
