@@ -15,6 +15,21 @@ module.exports = class Config extends Command {
     static async call(message, Phoenix) {
         if (message.args.length == 0)
             this.display(message, Phoenix);
+        else if (message.args.length == 2)
+        {
+            if (this.changeConfig(message.args[0], message.args[1], Phoenix))
+                message.react('✅');
+            else
+                message.react('⚠️');
+        }
+    }
+
+    static changeConfig(attribute, value, Phoenix) {
+        if (typeof Phoenix.config[attribute] == 'undefined') return false
+
+        Phoenix.config[attribute] = value;
+        this.save(Phoenix.config);
+        return true
     }
 
     static display(message, Phoenix) {
@@ -93,7 +108,7 @@ module.exports = class Config extends Command {
     }
 
     static save(data) {
-        fs.writeFile('./config.json', JSON.stringify(data), (err) => {
+        fs.writeFile('./config.json', JSON.stringify(data, null, 4), (err) => {
             if (err) console.error('Error while saving the config: ', err);
         })
     }
