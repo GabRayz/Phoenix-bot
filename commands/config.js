@@ -42,13 +42,14 @@ module.exports = class Config extends Command {
                             this.changePerm(message.args[1], message.args[2], message.args[3], message.args[4], message.args[5], Phoenix)
                             message.react('✅');
                             return;
-                        }
-                    }
-                }
+                        }else message.reply("Erreur sur le paramètre '" + message.args[4] + "'. Valeurs possibles: add,remove");
+                    }else message.reply("Erreur sur le paramètre '" + message.args[3] + "'. Valeurs possibles: whitelist,blacklist");
+                }else message.reply("Erreur sur le paramètre '" + message.args[2] + "'. Valeurs possibles: " + scopes);
             }
             message.react('⚠️');
         }else {
             message.react('⚠️');
+            message.reply('Commande invalide.')
         }
     }
 
@@ -161,6 +162,17 @@ module.exports = class Config extends Command {
                 console.error(err);
         })
 
+        let notice = new RichEmbed();
+        let description = 'Modifier une configuration: ' + Phoenix.config.prefix + 'config {attribut} {valeur}\n';
+            description += 'Modifier une permission: ' + Phoenix.config.prefix;
+            description += 'config perm {nom de la commande} {roles|channels|members} {whitelist|blacklist} {add|remove} {nom du role|nom de la catégorie/nom du salon|tag du membre(exemple#0001)}';
+        notice.setDescription(description);
+        message.channel.send(notice).catch(err => {
+            if (err.message == 'Missing Permissions')
+                message.channel.send('Erreur, mes permissions sont insuffisantes :(');
+            else
+                console.error(err);
+        })
     }
 
     static getChannelsNameFromId(channelsId, guild) {
