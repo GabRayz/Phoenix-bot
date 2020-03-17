@@ -22,6 +22,80 @@ module.exports = class Config extends Command {
             else
                 message.react('⚠️');
         }
+        // Args: "permissions", command name, roles/channels/members, whitelist/blacklist, add/remove, value
+        else if (message.args.length == 6 && (message.args[0] == "permissions" || message.args[0] == "perm"))
+        {
+            // Check if the permission is correct
+            if (this.checkIfCommandExists(message.args[1])) {
+                let scopes = ['roles', 'channels', 'members'];
+                if (scopes.includes(message.args[2])) {
+                    if (message.args[2] == "channels") {
+                        message.args[5] = this.getChannelIfFromName(message.args[5], message.guild);
+                        if (!message.args[5]) {
+                            message.reply('Salon introuvable. Format: "catégorie/salon"')
+                            return;
+                        }
+                    }
+                    if (message.args[3] == "whitelist" || message.args[3] == "blacklist") {
+                        if (message.args[4] == "add" || message.args[4] == "remove") {
+                            // Apply
+                            this.changePerm(message.args[1], message.args[2], message.args[3], message.args[4], message.args[5], Phoenix)
+                            message.react('✅');
+                            return;
+                        }
+                    }
+                }
+            }
+            message.react('⚠️');
+        }else {
+            message.react('⚠️');
+        }
+    }
+
+    static getChannelIfFromName(name, guild) {
+        // name: 'category/channel'
+        let names = name.split('/');
+        let category = guild.channels.find(c => c.name == names[0]);
+        if (!category) return false;
+        let channel = guild.channels.find(c => c.name == names[1] && c.parentID == category.id);
+        return channel ? channel.id : false;
+    }
+
+    static changePerm(commandName, scope, type, action, value, Phoenix) {
+        if (typeof Phoenix.config.permissions[commandName] == 'undefined')
+            this.createCommandPerm(commandName, Phoenix.config.permissions)
+        let list = Phoenix.config.permissions[commandName][scope][type];
+        if (action == "add")
+            list.push(value);
+        else if (list.includes(value))
+            list.splice(list.findIndex(el => el == value), 1);
+        
+        this.save(Phoenix.config);
+    }
+
+    static createCommandPerm(commandName, perms) {
+        perms[commandName] = {
+            roles: {
+                whitelist: [],
+                blacklist: []
+            },
+            channels: {
+                whitelist: [],
+                blacklist: []
+            },
+            members: {
+                whitelist: [],
+                blacklist: []
+            }
+        }
+    }
+
+    static checkIfCommandExists(name) {
+        if (name == "default") return true;
+        let commands = {}
+        commands = require('./command');
+        let com = Object.values(commands).find(c => c.name == name);
+        return (typeof com != 'undefined');
     }
 
     static changeConfig(attribute, value, Phoenix) {

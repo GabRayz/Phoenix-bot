@@ -103,12 +103,18 @@ function checkPermissions(perm, message) {
     if(perm.channels.blacklist.length > 0 && perm.channels.blacklist.includes(message.channel.id)) {
         return false;
     }
+    if(perm.members.blacklist.includes(message.author.tag)) {
+        return false;
+    }
 
     // check whitelists
     if(perm.roles.whitelist.length > 0 && !perm.roles.whitelist.includes(role.name)) {
         return false;
     }
     if(perm.channels.whitelist.length > 0 && !perm.channels.whitelist.includes(message.channel.id)) {
+        return false;
+    }
+    if(perm.members.whitelist.length > 0 && !perm.members.whitelist.includes(message.author.tag)) {
         return false;
     }
 
