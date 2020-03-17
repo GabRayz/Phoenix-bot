@@ -152,7 +152,9 @@ module.exports = class Config extends Command {
                 str += 'members - whitelist : ' + permissions.members.whitelist + '\n';
             if (permissions.members.blacklist.length > 0)
                 str += 'members - blacklist : ' + permissions.members.blacklist + '\n';
-            perms.addField(command, str);
+            
+            if (str)
+                perms.addField(command, str);
         })
         // Send
         message.channel.send(perms).catch(err => {
