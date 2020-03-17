@@ -23,12 +23,12 @@ module.exports = class Config extends Command {
         embed.setTitle('Configuration')
             .setColor('ORANGE')
             .setThumbnail(Phoenix.bot.user.avatarURL)
-            .addField('Prefix', Phoenix.config.prefix)
-            .addField('Notification de connexion', Phoenix.config.connectionAlert)
-            .addField('Salon Bot (id)', Phoenix.config.testChannel)
-            .addField('Les membres sans rôles ne peuvent pas controler le bot', Phoenix.config.everyoneBlackListed)
-            .addField('Adresse de téléchargement des vidéos', Phoenix.config.downloadAdress)
-            .addField('Port de téléchargement des vidéos', Phoenix.config.downloadPort)
+            .addField('Préfix - prefix', Phoenix.config.prefix)
+            .addField('Notification de connexion - connectionAlert', Phoenix.config.connectionAlert)
+            .addField('Salon Bot (id) - testchannel', Phoenix.config.testChannel)
+            .addField('Les membres sans rôles ne peuvent pas controler le bot - everyoneBlackListed', Phoenix.config.everyoneBlackListed)
+            .addField('Adresse de téléchargement des vidéos - downloadAdress', Phoenix.config.downloadAdress)
+            .addField('Port de téléchargement des vidéos - downloadPort', Phoenix.config.downloadPort)
 
         message.channel.send(embed).catch(err => {
             if (err.message == 'Missing Permissions')
@@ -46,18 +46,18 @@ module.exports = class Config extends Command {
         Object.keys(Phoenix.config.permissions).forEach(command => {
             let permissions = Phoenix.config.permissions[command];
             let str = '';
-            if (permissions.channelOptions.whitelist.length > 0)
-                str += 'Whitelist (salons) : ' + this.getChannelsNameFromId(permissions.channelOptions.whitelist, message.guild) + '\n';
-            if (permissions.channelOptions.blacklist.length > 0)
-                str += 'Blacklist (salons) : ' + this.getChannelsNameFromId(permissions.channelOptions.blacklist, message.guild) + '\n';
-            if (permissions.groupOptions.whitelist.length > 0)
-                str += 'Whitelist (Rôles) : ' + permissions.groupOptions.whitelist + '\n';
-            if (permissions.groupOptions.blacklist.length > 0)
-                str += 'Blacklist (Rôles) : ' + permissions.groupOptions.blacklist + '\n';
-            if (permissions.memberOptions.whitelist.length > 0)
-                str += 'Whitelist (Membres) : ' + permissions.memberOptions.whitelist + '\n';
-            if (permissions.memberOptions.blacklist.length > 0)
-                str += 'Blacklist (Membres) : ' + permissions.memberOptions.blacklist + '\n';
+            if (permissions.channels.whitelist.length > 0)
+                str += 'channels - whitelist : ' + this.getChannelsNameFromId(permissions.channels.whitelist, message.guild) + '\n';
+            if (permissions.channels.blacklist.length > 0)
+                str += 'channels - blaklist : ' + this.getChannelsNameFromId(permissions.channels.blacklist, message.guild) + '\n';
+            if (permissions.roles.whitelist.length > 0)
+                str += 'roles - whitelist : ' + permissions.roles.whitelist + '\n';
+            if (permissions.roles.blacklist.length > 0)
+                str += 'roles - blacklist : ' + permissions.roles.blacklist + '\n';
+            if (permissions.members.whitelist.length > 0)
+                str += 'members - whitelist : ' + permissions.members.whitelist + '\n';
+            if (permissions.members.blacklist.length > 0)
+                str += 'members - blacklist : ' + permissions.members.blacklist + '\n';
             perms.addField(command, str);
         })
         // Send
