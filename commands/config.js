@@ -28,6 +28,10 @@ module.exports = class Config extends Command {
         if (typeof Phoenix.config[attribute] == 'undefined') return false
 
         Phoenix.config[attribute] = value;
+        if (attribute == "prefix") {
+            Phoenix.config.activity = value + 'help';
+            Phoenix.bot.user.setActivity(Phoenix.config.activity).catch((e) => console.error(e))
+        }
         this.save(Phoenix.config);
         return true
     }
