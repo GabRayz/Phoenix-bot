@@ -7,36 +7,37 @@ const request = require('request');
 require('./src/http');
 const fs = require('fs');
 
-// Import config
-var config = {};
-config = require('./config.json');
-
 // Create bot client
 const bot = new Discord.Client();
-// Log in
-console.log('Connection...');
-bot.login(config.login);
 
 let Phoenix = {
-    bot: bot,
-    config: config
+    bot: bot
 }
-
-module.exports = Phoenix;
 
 // Import commands
 const Command = require('./commands/command');
 
+// Import config
+
+Phoenix.config = Command.Config.load().then(config => {
+    Phoenix.config = config;
+    // Log in
+    console.log('Connection...');
+    bot.login(config.login);
+})
+
+module.exports = Phoenix;
+
 bot.on('ready', () => {
     console.log('Phoenix bot ready to operate');
-    bot.user.setActivity(config.activity).catch((e) => console.error(e))
-    bot.user.setUsername(config.name)
+    bot.user.setActivity(Phoenix.config.activity).catch((e) => console.error(e))
+    bot.user.setUsername(Phoenix.config.name)
 
     // Find the default guild and test Channel
-    Phoenix.guild = bot.guilds.find(guild => guild.id == config.defaultGuild);
-    Phoenix.testChannel = Phoenix.guild.channels.find(chan => chan.id == config.testChannel);
+    Phoenix.guild = bot.guilds.find(guild => guild.id == Phoenix.config.defaultGuild);
+    Phoenix.testChannel = Phoenix.guild.channels.find(chan => chan.id == Phoenix.config.testChannel);
 
-    if (config.connectionAlert == true) {
+    if (Phoenix.config.connectionAlert == true) {
         Phoenix.testChannel.send("Phoenix connecté");
     }
 
@@ -54,7 +55,7 @@ Phoenix.sendClean = function(msg, channel, time = 20000) {
 }
 
 bot.on('message', (msg) => {
-    if (msg.content.startsWith(config.prefix)) {
+    if (msg.content.startsWith(Phoenix.config.prefix)) {
         console.log(msg.author.username + ' : ' + msg.content);
         // let message = new Message(msg);
         let msgParts = msg.content.split(' ');
@@ -65,7 +66,7 @@ bot.on('message', (msg) => {
 });
 
 function ReadCommand(message, command) {
-    if(config.everyoneBlackListed && GetGuildMember(message.author).roles.length == 0) {
+    if(Phoenix.config.everyoneBlackListed && GetGuildMember(message.author).roles.length == 0) {
         return;
     }
 
@@ -82,14 +83,14 @@ function ReadCommand(message, command) {
 }
 
 function searchPermissions(command, message) {
-    for (let name of Object.keys(config.permissions)) {
+    for (let name of Object.keys(Phoenix.config.permissions)) {
         if (name == command.name) {
-            let perm = config.permissions[name];
+            let perm = Phoenix.config.permissions[name];
             console.log(perm);
             return checkPermissions(perm, message);
         }
     };
-    let perm = config.permissions.default;
+    let perm = Phoenix.config.permissions.default;
     return checkPermissions(perm, message);
 }
 
