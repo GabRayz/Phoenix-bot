@@ -16,11 +16,15 @@
 	"downloadAdress": "http://localhost",
 	"permissions": {
 		"default": {
-			"groupOptions": {
+			"roles": {
 				"whitelist": [],
 				"blacklist": []
 			},
-			"channelOptions": {
+			"channels": {
+				"whitelist": [],
+				"blacklist": []
+			},
+			"members": {
 				"whitelist": [],
 				"blacklist": []
 			}

@@ -97,18 +97,18 @@ function searchPermissions(command, message) {
 function checkPermissions(perm, message) {
     let role = GetGuildMember(message.author).highestRole;
     // check blacklists
-    if(perm.groupOptions.blacklist.length > 0 && perm.groupOptions.blacklist.includes(role.name)) {
+    if(perm.roles.blacklist.length > 0 && perm.roles.blacklist.includes(role.name)) {
         return false;
     }
-    if(perm.channelOptions.blacklist.length > 0 && perm.channelOptions.blacklist.includes(message.channel.id)) {
+    if(perm.channels.blacklist.length > 0 && perm.channels.blacklist.includes(message.channel.id)) {
         return false;
     }
 
     // check whitelists
-    if(perm.groupOptions.whitelist.length > 0 && !perm.groupOptions.whitelist.includes(role.name)) {
+    if(perm.roles.whitelist.length > 0 && !perm.roles.whitelist.includes(role.name)) {
         return false;
     }
-    if(perm.channelOptions.whitelist.length > 0 && !perm.channelOptions.whitelist.includes(message.channel.id)) {
+    if(perm.channels.whitelist.length > 0 && !perm.channels.whitelist.includes(message.channel.id)) {
         return false;
     }
 
