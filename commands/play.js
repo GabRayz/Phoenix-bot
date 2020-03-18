@@ -116,59 +116,46 @@ module.exports = class Play extends Command {
         console.log('Current queue: ', this.queue);
         let song = this.queue.shift();
         console.log('Next song: ', song);
-        let url;
-        try {
-            if(typeof song.id !== 'undefined') {
-                url = "https://youtube.com/watch?v=" + song.id;
-                this.stream = this.getStream(url);
-            }else if (song.startsWith("http")) {
-                url = song;
-                this.stream = this.getStream(song);
-            }else {
-                url = await this.getUrlFromName(song, this.Phoenix)
-                if(!url) {
-                    return;
-                }
-                this.stream = this.getStream(url);
+
+        // Get video url
+        let url = await this.getUrlFromQuery(song).catch(err => {
+            if (err instanceof TypeError)
+            {
+                console.error(err);
+                this.textChannel.send('Une erreur est survenue.', {code: true});
             }
-        } catch (error) {
-            console.error(error);
-            this.textChannel.send("Oups, j'ai des problèmes :/");
-            this.nextSong();
-            return;
-        }
-        
-
-        this.stream.on('error', (err) => {
-            console.error("Erreur lors de la lecture : ", err);
-            this.textChannel.send("Erreur: " + err.message);
-            // this.voiceHandler.end();
+            else
+                this.textChannel.send(err);
         })
-        this.stream.on('end', () => {
-            console.log('Stream ended');
-        });
+        if (!url) return;
 
-        console.log('Playing stream');
-        await this.Phoenix.bot.user.setActivity("Loading...");
-        this.voiceHandler = await this.voiceConnection.playStream(this.stream, {volume: this.volume});
-        this.isPlaying = true;
+        // Get the stream
+        this.getStream(url).then(async stream => {
+            this.stream = stream;
 
-        this.voiceHandler.on('speaking', () => {
-            console.log('voice Handler speaking');
+            console.log('Playing stream');
+            await this.Phoenix.bot.user.setActivity("Loading...");
+            this.voiceHandler = await this.voiceConnection.playStream(this.stream, {volume: this.volume});
+            this.isPlaying = true;
+
+            this.voiceHandlerOnStart();
+            this.voiceHandlerOnEnd();
+        }).catch(err => {
+            console.error("Error while getting video infos: ", err);
+            this.textChannel.send('Erreur: ', err.message);
+            return this.nextSong();
         })
+    }
 
-        this.voiceHandler.on("start", async () => {
+    static voiceHandlerOnStart() {
+        this.voiceHandler.on('start', () => {
             console.log('Playing...');
-            if(song.name) {
-                await this.Phoenix.bot.user.setActivity(song.name);
-            }else {
-                let title = await this.GetNameFromUrl(url);
-                if(title) {
-                    this.Phoenix.bot.user.setActivity(title);
-                }
-            }
+            if (typeof this.videoInfos != 'undefined')
+                this.Phoenix.bot.user.setActivity(this.videoInfos.title);
         })
+    }
 
+    static async voiceHandlerOnEnd() {
         this.voiceHandler.once('end', async (reason) => {
             await this.Phoenix.bot.user.setActivity(this.Phoenix.config.activity);
             this.voiceHandler.destroy();
@@ -178,7 +165,7 @@ module.exports = class Play extends Command {
             this.videoUrl = null;
             console.log('End of soung: ' + reason);
             if(!this.isPlaying) return;
-
+            
             if(this.queue.length > 0 || Play.currentPlaylist.length > 0) {
                 this.nextSong()
             }else {
@@ -187,6 +174,25 @@ module.exports = class Play extends Command {
                 this.voiceChannel.leave();
                 return;
             }
+        })
+    }
+
+    static getUrlFromQuery(song) {
+        return new Promise(async (resolve, reject) => {
+            if (typeof song == 'undefined') return reject(new TypeError('song is not undefined'));
+            let url;
+            // If the video has been queued from the `playlist play` command, the id may be specified in the queue.
+            if(typeof song.id !== 'undefined') {
+                url = "https://youtube.com/watch?v=" + song.id;
+            }else if (song.startsWith("http")) {
+                url = song;
+            }else {
+                url = await this.getUrlFromName(song, this.Phoenix)
+                if(!url) {
+                    return reject('Aucune vidéo trouvée');
+                }
+            }
+            return resolve(url)
         })
     }
 
@@ -219,8 +225,20 @@ module.exports = class Play extends Command {
     }
 
     static GetInfos(url) {
-        let id = url.split("watch?v=")[1];
-        youtube.getInfo(id, (err, infos) => {
+        // let id;
+        // if (url.includes('watch?v=')) {
+        //     let param = url.split('watch?v=')[1];
+        //     // Exclude other parameters
+        //     id = param.split('&')[0]
+        // }
+        // else if (url.includes('youtu.be/')) {
+        //     id = url.split('youtu.be/')[1]
+        // }
+        // if (!id) {
+        //     console.error('GetInfos: Unknown url format');
+        //     return;
+        // }
+        youtube.getInfo(url, (err, infos) => {
             if (err) {
                 console.error("Error while getting video infos: ", err);
                 return;
@@ -249,13 +267,29 @@ module.exports = class Play extends Command {
     }
 
     static getStream(url) {
-        console.log('Get stream from url : ' + url);
-        this.GetInfos(url)
-        let stream = youtube(url, {
-            // filter: "audioonly",
-            highWaterMark: 1<<25
-        });
-        return stream;
+        return new Promise((resolve, reject) => {
+            if (typeof url == 'undefined') return reject(new TypeError('url is not defined'));
+            console.log('Get stream from url : ' + url);
+            youtube.getInfo(url, (err, infos) => {
+                if (err) {
+                    return reject(err);
+                }
+                this.videoInfos = infos;
+                this.videoUrl = url;
+                let stream = youtube(url, {
+                    filter: "audioonly",
+                    highWaterMark: 1<<25
+                });
+
+                stream.on('error', (err) => {
+                    console.error("Erreur lors de la lecture : ", err);
+                    this.textChannel.send("Erreur: " + err.message);
+                    // this.voiceHandler.end();
+                })
+                // console.log(stream);
+                return resolve(stream);
+            })
+        })
     }
 
     static getUrlFromName(name, Phoenix) {
