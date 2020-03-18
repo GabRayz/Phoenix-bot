@@ -95,6 +95,7 @@ module.exports = class Power4 extends Command {
         if (move == -1) return;
         if (this.isColumnFilled(move)) return;
         this.place(move, this.currentPlayer);
+        this.draw();
         this.lookForWinner(winner => {
             if (winner == 0) {
                 if (this.isBoardFull())
@@ -108,7 +109,6 @@ module.exports = class Power4 extends Command {
     }
 
     static switch() {
-        this.draw();
         if (this.currentPlayer == 1) {
             this.currentPlayer = 2;
             this.currentPlayerTag = this.j2;
@@ -202,11 +202,21 @@ module.exports = class Power4 extends Command {
         return 0;
     }
 
-    static lookDiagonal(x, y) {
+    static lookDiagonalUp(x, y) {
         if (x > 3 || y > 2) return 0;
         let scope = [];
         for (let i = 0; i < 4; i++)
             scope[i] = this.board[x + i][y + i];
+        if (scope.every(tile => tile == 1)) return 1;
+        if (scope.every(tile => tile == 2)) return 2;
+        return 0;
+    }
+
+    static lookDiagonalDown(x, y) {
+        if (x > 3 || y < 3) return 0;
+        let scope = [];
+        for (let i = 0; i < 4; i++)
+            scope[i] = this.board[x + i][y - i];
         if (scope.every(tile => tile == 1)) return 1;
         if (scope.every(tile => tile == 2)) return 2;
         return 0;
