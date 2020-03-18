@@ -1,6 +1,6 @@
 {
   "name": "phoenix-bot",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Bot for Discord app",
   "main": "index.js",
   "scripts": {

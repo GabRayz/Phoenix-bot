@@ -18,4 +18,5 @@ module.exports = {
     Download: require('./download'),
     Update: require('./update'),
     Config: require('./config'),
+    Power4: require('./power4'),
 }
