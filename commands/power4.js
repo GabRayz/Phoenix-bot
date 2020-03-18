@@ -153,7 +153,8 @@ module.exports = class Power4 extends Command {
             }
             msg += '\n';
         }
-        msg += '—————————————';
+        // msg += '—————————————';
+        msg += '--1---2---3---4---5---6---7--'
         this.boardMsg.edit(msg).then(() => console.log('Board drawn')).catch(e => console.error(e));
     }
 
@@ -175,7 +176,9 @@ module.exports = class Power4 extends Command {
                 if (res > 0) return callback(res);
                 res = this.lookVertical(i, j);
                 if (res > 0) return callback(res);
-                res = this.lookHorizontal(i, j);
+                res = this.lookDiagonalUp(i, j);
+                if (res > 0) return callback(res);
+                res = this.lookDiagonalDown(i, j);
                 if (res > 0) return callback(res);
             }
         }
