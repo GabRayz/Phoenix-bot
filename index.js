@@ -10,16 +10,21 @@ const fs = require('fs');
 // Create bot client
 const bot = new Discord.Client();
 
+/**
+ * Phoenix is exported to share the Client object and the configuration
+ */
 let Phoenix = {
-    bot: bot
+    bot: bot,
+    /**
+     * The number of currently active commands, like playing a music or a game of connect four.
+     * If it is 0, then the bot is idle and can be updated without bothering users.
+     */
+    activities: 0,
+    botChannel: null
 }
 
-// Import commands
-const Command = require('./commands/command');
-
 // Import config
-
-Phoenix.config = Command.Config.load().then(config => {
+Phoenix.config = require('./commands/config').load().then(config => {
     Phoenix.config = config;
     // Log in
     console.log('Connection...');
@@ -28,6 +33,9 @@ Phoenix.config = Command.Config.load().then(config => {
 
 module.exports = Phoenix;
 
+// Import commands
+const Command = require('./commands/command');
+
 bot.on('ready', () => {
     console.log('Phoenix bot ready to operate');
     bot.user.setActivity(Phoenix.config.activity).catch((e) => console.error(e))
@@ -35,11 +43,11 @@ bot.on('ready', () => {
 
     // Find the default guild and test Channel
     Phoenix.guild = bot.guilds.find(guild => guild.id == Phoenix.config.defaultGuild);
-    Phoenix.testChannel = Phoenix.guild.channels.find(chan => chan.id == Phoenix.config.testChannel);
+    Phoenix.botChannel = Phoenix.guild.channels.find(chan => chan.id == Phoenix.config.testChannel);
 
-    if (Phoenix.config.connectionAlert == true) {
-        Phoenix.testChannel.send("Phoenix connecté");
-    }
+    // if (Phoenix.config.connectionAlert == true) {
+        Phoenix.botChannel.send("Phoenix connecté");
+    // }
 
     checkIfUpdated();
 });
@@ -158,5 +166,7 @@ function checkIfUpdated()
 
 Command.Update.autoUpdate(Phoenix);
 setInterval(() => {
-    Command.Update.autoUpdate(Phoenix);
-}, 3600 * 24);
+    if (Phoenix.activities == 0) {
+        Command.Update.autoUpdate(Phoenix);
+    }
+}, 30 * 1000)

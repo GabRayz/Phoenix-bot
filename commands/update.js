@@ -1,6 +1,7 @@
 let Command = require('../src/Command');
 const fs = require('fs');
 const exec = require('child_process').exec;
+let Phoenix = require('../index');
 
 module.exports = class Update extends Command {
     constructor(author) {
@@ -29,6 +30,8 @@ module.exports = class Update extends Command {
     static autoUpdate() {
         this.checkForUpdate((res) => {
             if (res) {
+                if (Phoenix.botChannel != null)
+                    Phoenix.botChannel.send('Installation de la mise à jour...', {code: true});
                 this.update();
             }
         })

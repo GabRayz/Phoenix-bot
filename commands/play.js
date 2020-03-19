@@ -3,6 +3,8 @@ const youtube = require('ytdl-core');
 const opus = require('opusscript');
 const YTplaylist = require('../src/ytplaylist');
 
+let Phoenix = require('../index');
+
 let Command = require('../src/Command');
 
 module.exports = class Play extends Command {
@@ -104,6 +106,10 @@ module.exports = class Play extends Command {
 
     static async nextSong() {
         await this.sleep(200);
+        // If it this the first song to be played, add an activity to Phoenix
+        if (!this.isPlaying)
+            Phoenix.activities++;
+        
         console.log('Choosing next song...');
         if(!this.queue.length > 0) {
             if(this.currentPlaylist.length > 0) {
@@ -170,6 +176,7 @@ module.exports = class Play extends Command {
                 this.nextSong()
             }else {
                 this.isPlaying = false;
+                Phoenix.activities--;
                 console.log("No more musics in queue, stop playing.");
                 this.voiceChannel.leave();
                 return;
@@ -337,6 +344,7 @@ module.exports = class Play extends Command {
         if(!this.isPlaying) return;
         console.log("Stopping music");
         this.isPlaying = false;
+        Phoenix.activities--;
         this.stream.end();
         this.voiceChannel.leave();
     }

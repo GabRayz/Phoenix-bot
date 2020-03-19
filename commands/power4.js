@@ -1,4 +1,5 @@
 let Command = require('../src/Command');
+let Phoenix = require('../index');
 
 module.exports = class Power4 extends Command {
     constructor(author) {
@@ -63,6 +64,7 @@ module.exports = class Power4 extends Command {
     }
 
     static start() {
+        Phoenix.activities++;
         this.channel.send('La partie commence...').then(boardMsg => {
             this.boardMsg = boardMsg;
             this.isPlaying = true;
@@ -241,6 +243,7 @@ module.exports = class Power4 extends Command {
     }
 
     static stop() {
+        Phoenix.activities--;
         this.isPlaying = false;
         this.board = [];
         this.j1 = null;
