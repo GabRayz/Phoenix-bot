@@ -45,9 +45,9 @@ bot.on('ready', () => {
     Phoenix.guild = bot.guilds.find(guild => guild.id == Phoenix.config.defaultGuild);
     Phoenix.botChannel = Phoenix.guild.channels.find(chan => chan.id == Phoenix.config.testChannel);
 
-    // if (Phoenix.config.connectionAlert == true) {
+    if (Phoenix.config.connectionAlert == 'true') {
         Phoenix.botChannel.send("Phoenix connecté");
-    // }
+    }
 
     checkIfUpdated();
 });
