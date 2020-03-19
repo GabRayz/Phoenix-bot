@@ -30,7 +30,7 @@ module.exports = class Update extends Command {
     static autoUpdate() {
         this.checkForUpdate((res) => {
             if (res) {
-                if (Phoenix.botChannel != null)
+                if (Phoenix.botChannel != null && Phoenix.config.updateAlert)
                     Phoenix.botChannel.send('Installation de la mise à jour...', {code: true});
                 this.update();
             }
@@ -53,8 +53,9 @@ module.exports = class Update extends Command {
 
     static update(callback) {
         console.log('Updating...')
-        fs.writeFile('./temoin', '', () => {
+        fs.writeFile('./temoin', '', async () => {
             console.log('Temoin créé');
+            await Phoenix.bot.user.setActivity('Mise à jour...');
             exec('./update', (error) => {
                 if (error) {
                     console.error('Failed to update: ', error)

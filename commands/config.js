@@ -119,6 +119,7 @@ module.exports = class Config extends Command {
             .setThumbnail(Phoenix.bot.user.avatarURL)
             .addField('Préfix - prefix', Phoenix.config.prefix)
             .addField('Notification de connexion - connectionAlert', Phoenix.config.connectionAlert)
+            .addField('Notification de mise à jour - updateAlert', Phoenix.config.updateAlert)
             .addField('Salon Bot (id) - testchannel', Phoenix.config.testChannel)
             .addField('Les membres sans rôles ne peuvent pas controler le bot - everyoneBlackListed', Phoenix.config.everyoneBlackListed)
             .addField('Adresse de téléchargement des vidéos - downloadAdress', Phoenix.config.downloadAdress)

@@ -4,6 +4,7 @@
 	"activity": "activity",
 	"prefix" : "!",
 	"connectionAlert" : "false",
+	"updateAlert": "true",
 	"defaultGuild" : "Name of the guild",
 	"testChannel" : "Default channel id",
 	"everyoneBlackListed" : "true",
