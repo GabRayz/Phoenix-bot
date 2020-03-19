@@ -194,7 +194,30 @@ module.exports = class Config extends Command {
                     console.error('Error while loading the config file: ', err);
                     return reject();
                 }
-                resolve(JSON.parse(data));
+                this.compareWithSample(JSON.parse(data)).then(config => {
+                    return resolve(config);
+                }).catch(e => {
+                    console.error('Error while loading the config-exemple file: ', e);
+                    return reject();
+                })
+            })
+        })
+    }
+
+    /**
+     * Compare the config.json with the config-exemple.json to look for git updates
+     * @param {*} config 
+     */
+    static compareWithSample(config) {
+        return new Promise((resolve, reject) => {
+            fs.readFile('./config-exemple.json', 'utf-8', (err, data) => {
+                if (err) return reject()
+                let sample = JSON.parse(data);
+                Object.keys(sample).forEach(attribute => {
+                    if (typeof config[attribute] == 'undefined')
+                        config[attribute] = sample[attribute];
+                })
+                resolve(config);
             })
         })
     }
