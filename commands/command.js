@@ -19,4 +19,5 @@ module.exports = {
     Update: require('./update'),
     Config: require('./config'),
     Power4: require('./power4'),
+    Hangman: require('./hangman'),
 }

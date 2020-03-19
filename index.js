@@ -84,6 +84,8 @@ function ReadCommand(message, command) {
                 PermissionDenied(message);
                 return;
             }
+            if (!message.guild && (typeof Command[element].callableFromMP == 'undefined' || !Command[element].callableFromMP))
+                return
             Command[element].call(message, Phoenix);
             return;
         }
