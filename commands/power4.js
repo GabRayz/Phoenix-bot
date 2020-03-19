@@ -85,6 +85,11 @@ module.exports = class Power4 extends Command {
                     this.onPlay(this.emojiToInt(messageReaction.emoji.name));
                 }
             })
+            phoenix.bot.on('messageReactionRemove', (messageReaction, user) => {
+                if (this.isPlaying && messageReaction.message.id == this.boardMsg.id && user.tag == this.currentPlayerTag.tag) {
+                    this.onPlay(this.emojiToInt(messageReaction.emoji.name));
+                }
+            })
         })
     }
     
@@ -140,7 +145,6 @@ module.exports = class Power4 extends Command {
     }
 
     static draw() {
-        console.log(this.board);
         let msg = '';
         for(let j = 5; j >= 0; j--) {
             msg += '|';
