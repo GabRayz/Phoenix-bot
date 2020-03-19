@@ -30,7 +30,7 @@ module.exports = class Update extends Command {
     static autoUpdate() {
         this.checkForUpdate((res) => {
             if (res) {
-                if (Phoenix.botChannel != null && Phoenix.config.updateAlert)
+                if (Phoenix.botChannel != null && Phoenix.config.updateAlert == 'true')
                     Phoenix.botChannel.send('Installation de la mise à jour...', {code: true});
                 this.update();
             }
