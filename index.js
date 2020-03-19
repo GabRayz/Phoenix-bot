@@ -145,7 +145,7 @@ function checkIfUpdated()
         if (!err) {
             fs.unlink('temoin', () => {
                 Command.Update.readVersion().then(version => {
-                    if (Phoenix.config.updateAlert) {
+                    if (Phoenix.config.updateAlert == "true") {
                         let embed = new Discord.RichEmbed();
                         embed.setTitle('Phoenix a été mis à jour.')
                         .setDescription('v' + version)
@@ -153,11 +153,11 @@ function checkIfUpdated()
                         .setThumbnail(Phoenix.bot.user.avatarURL)
                         .setFooter('Codé par GabRay');
                         
-                        Phoenix.testChannel.send(embed).catch(err => {
+                        Phoenix.botChannel.send(embed).catch(err => {
                             if (err.message == 'Missing Permissions') {
-                                Phoenix.testChannel.send('Erreur, mes permissions sont insuffisantes :(');
-                            }else
-                            console.error(err);
+                                Phoenix.botChannel.send('Erreur, mes permissions sont insuffisantes :(');
+                            }else if (err)
+                                console.error(err);
                         })
                     }
                 }).catch(err, console.error(err));
