@@ -20,4 +20,5 @@ module.exports = {
     Config: require('./config'),
     Power4: require('./power4'),
     Hangman: require('./hangman'),
+    TwoK48: require('./2048'),
 }
