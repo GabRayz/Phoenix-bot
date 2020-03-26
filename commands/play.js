@@ -56,7 +56,7 @@ module.exports = class Play extends Command {
         if(message.args.length > 0 && message.args[0].startsWith('http') && message.args[0].includes('playlist?list=')) {
             console.log('Importing playlist...');
             YTplaylist.Enqueue(message.args[0], function() {
-                this.start(Phoenix, message);
+                Play.start(Phoenix, message);
             });
         }else {
             this.addToQueue(message);

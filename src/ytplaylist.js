@@ -1,5 +1,4 @@
 let Command = require('../commands/command.js');
-let Play = require('../commands/play');
 let Playlist = require('../commands/playlist');
 const request = require('request');
 let Config = {}
@@ -12,7 +11,7 @@ module.exports = class YTplaylist {
         let videos = await this.GetPlaylist(id);
         if(videos) {
             videos.forEach(video => {
-                Play.addToQueueString(video);
+                Command.Play.addToQueueString(video);
             })
         }
         console.log('Playlist enqueued !');
