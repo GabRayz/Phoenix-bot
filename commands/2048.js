@@ -5,56 +5,69 @@ module.exports = class TwoK48 extends Game {
     static name = '2048';
     static alias = [
         "2048",
-        ""
     ];
     static description = "Jouons à 2048";
     
+    /**
+     * The discord text message displaying the game board
+     */
+    boardMsg = null;
+    /**
+     * Names of the tiles emojis.
+     */
+    names = ['2048_2', '2048_4', '2048_8', '2048_16', '2048_32', '2048_64', '2048_128', '2048_512', '2048_1024', '2048_2048', '2048_4096'];
+    /**
+     * Id of each tile emoji.
+     */
+    ids = []
+    /**
+     * The game board. Each cell contains the index of the tile in this.names, -1 if there is no tile in this cell.
+     */
+    board = [];
+
     constructor(message) {
         super(message);
-        this.ids = []
-        this.names = ['2048_2', '2048_4', '2048_8', '2048_16', '2048_32', '2048_64', '2048_128', '2048_512', '2048_1024', '2048_2048', '2048_4096'];
         this.getIDs();
-        this.board = [];
-        this.boardMsg;
         this.isLoading = false;
 
         this.alias = TwoK48.alias;
         this.start();
     }
 
-    static async call(message, Phoenix) {
-        if (this.ids.length == 0)
-            if (!this.getIDs()) return;
-        if (!this.isPlaying)
-            this.start(message.author.tag);
-        else if (message.args.length == 1 && message.args[0] == 'stop' && this.isPlaying)
-            this.stop();
-    }
-
+    /**
+     * Start the game
+     */
     async start() {
         this.isPlaying = true;
         Phoenix.activities++;
         this.player = this.players[0];
+        // Preparing the board message
         this.boardMsg = await this.channel.send('Chargement de la partie...');
         await this.boardMsg.react('⬅️');
         await this.boardMsg.react('⬆️');
         await this.boardMsg.react('⬇️');
         await this.boardMsg.react('➡️');
+        // Preparing the game board
         this.board = this.createEmptyBoard();
         this.placeFirstTiles();
 
         await this.draw();
 
         Phoenix.bot.on('messageReactionAdd', (messageReaction, user) => {
-            if (user.tag == this.player.tag && !this.isLoading)
+            // If the game is playing, let the player add reactions to move.
+            if (user.tag == this.player.tag && !this.isLoading && this.isPlaying)
                 this.onPlay(this.emojiToMove(messageReaction.emoji.name));
         })
         Phoenix.bot.on('messageReactionRemove', (messageReaction, user) => {
-            if (user.tag == this.player.tag && !this.isLoading)
+            if (user.tag == this.player.tag && !this.isLoading && this.isPlaying)
                 this.onPlay(this.emojiToMove(messageReaction.emoji.name));
         })
     }
 
+    /**
+     * Do a move.
+     * @param {*} move 
+     */
     async onPlay(move) {
         if (move == null) return;
         if (this.move(move)) {
@@ -121,15 +134,16 @@ module.exports = class TwoK48 extends Game {
     }
 
     move(move) {
+        // Create the next board
         let newBoard = this.createEmptyBoard();
         // Determine the direction of the loop to move the tiles
         let y = (move[1] == 1) ? 3 : 0;
         while (y != ((move[1] == 1) ? -1 : 4)) {
             let x = (move[0] == 1) ? 3 : 0;
             while (x != ((move[0] == 1) ? -1 : 4)) {
-                // console.log('X: ', x, ' Y: ', y);
                 let tile = this.board[x][y];
                 if (tile == -1) {
+                    // If the cell is empty, continue
                     x += (move[0] == 1) ? -1 : 1;
                     continue;
                 }
@@ -151,21 +165,33 @@ module.exports = class TwoK48 extends Game {
             }
             y += (move[1] == 1) ? -1 : 1;
         }
-        
+        // Compare the new situation with the previous one to see if there is a change.
         let hasChanged = !this.compareBoards(this.board, newBoard);
         this.board = newBoard;
         return hasChanged;
     }
 
+    /**
+     * Get the next position of the tile
+     * @param {*} newBoard 
+     * @param {*} x 
+     * @param {*} y 
+     * @param {*} tile Id of the tile (index in this.names)
+     * @param {*} move Move of the player
+     */
     getNextTile(newBoard, x, y, tile, move) {
+        // Look each of the next cells in straight line
         while (x >= 0 && x < 4 && y >= 0 && y < 4) {
+            // If there is an identic tile, returns its coordinates to merge them
             if (newBoard[x][y] == tile)
                 return [x, y];
+            // If there is an obstacle, returns the previous position
             else if (newBoard[x][y] != -1)
                 return [x - move[0], y - move[1]];
             x += move[0];
             y += move[1];
         }
+        // If we get outside the board, returns the previous position
         if (x < 0) x++;
         if (x > 3) x--;
         if (y < 0) y++;
@@ -173,9 +199,13 @@ module.exports = class TwoK48 extends Game {
         return [x, y];
     }
 
+    /**
+     * Converts a reaction emoji into a playable move.
+     * @param {*} emojiName 
+     */
     emojiToMove(emojiName) {
         let emojis = {
-            "⬅️": [-1, 0],
+            "⬅️": [-1, 0], // Direction of the move.
             "⬆️": [0, -1],
             "⬇️": [0, 1],
             "➡️": [1, 0],
@@ -196,6 +226,9 @@ module.exports = class TwoK48 extends Game {
         return Math.floor(Math.random() * max);
     }
 
+    /**
+     * Place three '2' tiles in random positions
+     */
     placeFirstTiles() {
         let k = 0;
         while (k < 3) {
@@ -206,6 +239,12 @@ module.exports = class TwoK48 extends Game {
         }
     }
 
+    /**
+     * Place a tile
+     * @param {*} x 
+     * @param {*} y 
+     * @param {*} value index of the tile in this.names
+     */
     place(x, y, value) {
         if (this.board[x][y] == -1) {
             this.board[x][y] = value;
@@ -214,6 +253,9 @@ module.exports = class TwoK48 extends Game {
         return false;
     }
 
+    /**
+     * Draw the board by editing this.boardMsg.
+     */
     draw() {
         return new Promise(resolve => {
             let msg = '';
@@ -253,6 +295,9 @@ module.exports = class TwoK48 extends Game {
         Phoenix.activities--;
     }
 
+    /**
+     * Get the id of each emoji.
+     */
     getIDs() {
         let manager = Phoenix.bot.emojis;
         this.names.forEach(name => {

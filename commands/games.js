@@ -14,6 +14,9 @@ module.exports = class Games extends Command {
     ];
     static description = "Jouer à des mini-jeux.";
 
+    /**
+     * List of currently playing instances of games
+     */
     static currentGames = [];
 
     static async call(message, Phoenix) {
@@ -32,12 +35,14 @@ module.exports = class Games extends Command {
     static startGame(name, message) {
         Object.keys(games).forEach(game => {
             if (games[game].alias.includes(name)) {
+                // Instantiate a new game and add it to the current games
                 this.currentGames.push(new games[game](message));
             }
         })
     }
 
     static stopGame(name, authorTag) {
+        // Find a game with the corresponding name and player.
         let game = this.currentGames.find(game => game.alias.includes(name) && game.players.find(player => player.tag == authorTag));
         game.stop();
     }
