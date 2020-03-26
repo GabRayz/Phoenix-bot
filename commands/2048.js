@@ -1,25 +1,26 @@
-let Command = require('../src/Command');
 let Phoenix = require('../index');
+let Game = require('../src/Game');
 
-module.exports = class TwoK48 extends Command {
-    constructor(author) {
-        this.author = author;
-    }
+module.exports = class TwoK48 extends Game {
     static name = '2048';
     static alias = [
         "2048",
         ""
     ];
     static description = "Jouons à 2048";
+    
+    constructor(message) {
+        super(message);
+        this.ids = []
+        this.names = ['2048_2', '2048_4', '2048_8', '2048_16', '2048_32', '2048_64', '2048_128', '2048_512', '2048_1024', '2048_2048', '2048_4096'];
+        this.getIDs();
+        this.board = [];
+        this.boardMsg;
+        this.isLoading = false;
 
-    static names = ['2048_2', '2048_4', '2048_8', '2048_16', '2048_32', '2048_64', '2048_128', '2048_512', '2048_1024', '2048_2048', '2048_4096'];
-    static ids = []
-
-    static isPlaying = false;
-    static player;
-    static board = [];
-    static boardMsg;
-    static isLoading = false;
+        this.alias = TwoK48.alias;
+        this.start();
+    }
 
     static async call(message, Phoenix) {
         if (this.ids.length == 0)
@@ -30,11 +31,11 @@ module.exports = class TwoK48 extends Command {
             this.stop();
     }
 
-    static async start(player) {
+    async start() {
         this.isPlaying = true;
         Phoenix.activities++;
-        this.player = player;
-        this.boardMsg = await Phoenix.botChannel.send('Chargement de la partie...');
+        this.player = this.players[0];
+        this.boardMsg = await this.channel.send('Chargement de la partie...');
         await this.boardMsg.react('⬅️');
         await this.boardMsg.react('⬆️');
         await this.boardMsg.react('⬇️');
@@ -45,16 +46,16 @@ module.exports = class TwoK48 extends Command {
         await this.draw();
 
         Phoenix.bot.on('messageReactionAdd', (messageReaction, user) => {
-            if (user.tag == this.player && !this.isLoading)
+            if (user.tag == this.player.tag && !this.isLoading)
                 this.onPlay(this.emojiToMove(messageReaction.emoji.name));
         })
         Phoenix.bot.on('messageReactionRemove', (messageReaction, user) => {
-            if (user.tag == this.player && !this.isLoading)
+            if (user.tag == this.player.tag && !this.isLoading)
                 this.onPlay(this.emojiToMove(messageReaction.emoji.name));
         })
     }
 
-    static async onPlay(move) {
+    async onPlay(move) {
         if (move == null) return;
         if (this.move(move)) {
             this.isLoading = true;
@@ -69,7 +70,7 @@ module.exports = class TwoK48 extends Command {
         }
     }
 
-    static isGameOver() {
+    isGameOver() {
         for(let i = 0; i < 4; i++) {
             for(let j = 0; j < 4; j++) {
                 if (this.canMove(i, j, i - 1, j)) return false;
@@ -81,7 +82,7 @@ module.exports = class TwoK48 extends Command {
         return true;
     }
 
-    static canMove(x, y, newX, newY) {
+    canMove(x, y, newX, newY) {
         if (newX < 0 || newX > 3 || newY < 0 || newY > 3) return false;
         return this.board[newX][newY] == -1 || this.board[newX][newY] == this.board[x][y];
     }
@@ -90,7 +91,7 @@ module.exports = class TwoK48 extends Command {
      * Place a nex random tile depending on the last move.
      * @param {*} move 
      */
-    static placeRandom(move) {
+    placeRandom(move) {
         while (true) {
             let rand = this.random();
             let x, y;
@@ -108,7 +109,7 @@ module.exports = class TwoK48 extends Command {
         }
     }
 
-    static compareBoards(board1, board2) {
+    compareBoards(board1, board2) {
         for (let j = 0; j < 4; j++) {
             for (let i = 0; i < 4; i++) {
                 if (board1[i][j] != board2[i][j])
@@ -119,7 +120,7 @@ module.exports = class TwoK48 extends Command {
         return true;
     }
 
-    static move(move) {
+    move(move) {
         let newBoard = this.createEmptyBoard();
         // Determine the direction of the loop to move the tiles
         let y = (move[1] == 1) ? 3 : 0;
@@ -156,7 +157,7 @@ module.exports = class TwoK48 extends Command {
         return hasChanged;
     }
 
-    static getNextTile(newBoard, x, y, tile, move) {
+    getNextTile(newBoard, x, y, tile, move) {
         while (x >= 0 && x < 4 && y >= 0 && y < 4) {
             if (newBoard[x][y] == tile)
                 return [x, y];
@@ -172,11 +173,7 @@ module.exports = class TwoK48 extends Command {
         return [x, y];
     }
 
-    static isMoveValid(move) { // TODO
-        return true;
-    }
-
-    static emojiToMove(emojiName) {
+    emojiToMove(emojiName) {
         let emojis = {
             "⬅️": [-1, 0],
             "⬆️": [0, -1],
@@ -187,7 +184,7 @@ module.exports = class TwoK48 extends Command {
         return emojis[emojiName];
     }
 
-    static createEmptyBoard() {
+    createEmptyBoard() {
         let board = [];
         for (let i = 0; i < 4; i++) {
             board.push([-1, -1, -1, -1]);
@@ -195,11 +192,11 @@ module.exports = class TwoK48 extends Command {
         return board;
     }
 
-    static random(max = 4) {
+    random(max = 4) {
         return Math.floor(Math.random() * max);
     }
 
-    static placeFirstTiles() {
+    placeFirstTiles() {
         let k = 0;
         while (k < 3) {
             let x = this.random();
@@ -209,7 +206,7 @@ module.exports = class TwoK48 extends Command {
         }
     }
 
-    static place(x, y, value) {
+    place(x, y, value) {
         if (this.board[x][y] == -1) {
             this.board[x][y] = value;
             return true;
@@ -217,7 +214,7 @@ module.exports = class TwoK48 extends Command {
         return false;
     }
 
-    static draw() {
+    draw() {
         return new Promise(resolve => {
             let msg = '';
             for(let j = 0; j < 4; j++) {
@@ -235,7 +232,7 @@ module.exports = class TwoK48 extends Command {
         })
     }
 
-    static countPoints() {
+    countPoints() {
         let points = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096];
         let total = 0;
         for(let j = 0; j < 4; j++) {
@@ -248,20 +245,20 @@ module.exports = class TwoK48 extends Command {
         return total;
     }
 
-    static stop() {
+    stop() {
         let points = this.countPoints();
         let msg = '**Fin de la partie !**\nRésultat: **' + points + '** points.'
-        Phoenix.botChannel.send(msg);
+        this.channel.send(msg);
         this.isPlaying = false;
         Phoenix.activities--;
     }
 
-    static getIDs() {
+    getIDs() {
         let manager = Phoenix.bot.emojis;
         this.names.forEach(name => {
             let emoji = manager.find(emoji => emoji.name == name);
             if (emoji == null) {
-                Phoenix.botChannel.send('Les emojis 2048 ne sont pas installés ! :c');
+                this.channel.send('Les emojis 2048 ne sont pas installés ! :c');
                 return false;
             }
             let fullId = '<:' + emoji.name + ':' + emoji.id + '>';

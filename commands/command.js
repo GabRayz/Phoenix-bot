@@ -19,4 +19,5 @@ module.exports.Update = require('./update');
 module.exports.Config = require('./config');
 module.exports.Power4 = require('./power4');
 module.exports.Hangman = require('./hangman');
-module.exports.TwoK48 = require('./2048');
+module.exports.Games = require('./games');
+// module.exports.TwoK48 = require('./2048');
