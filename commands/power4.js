@@ -248,6 +248,7 @@ module.exports = class Power4 extends Command {
 
     static stop() {
         Phoenix.activities--;
+        Phoenix.botChannel.send('Partie terminée !', {code:true});
         this.isPlaying = false;
         this.board = [];
         this.j1 = null;
