@@ -1,7 +1,13 @@
-module.exports = class Game {
+const EventEmitter = require('events');
+
+module.exports = class Game extends EventEmitter {
     static name;
     static alias = [];
 
+    /**
+     * Unique identifier of the game.
+     */
+    gameId;
     /**
      * The discord text channel the game is taking place in.
      */
@@ -15,7 +21,9 @@ module.exports = class Game {
      */
     isPlaying = false;
 
-    constructor(message) {
+    constructor(message, gameId) {
+        super();
+        this.gameId = gameId;
         this.channel = message.channel;
         this.players = [];
         this.players.push({
@@ -25,3 +33,8 @@ module.exports = class Game {
         this.isPlaying = false;
     }
 }
+
+// module.exports.Game = Game;
+// module.exports.events = {
+//     end: new events.EventEmitter()
+// }

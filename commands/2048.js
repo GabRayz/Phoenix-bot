@@ -25,8 +25,8 @@ module.exports = class TwoK48 extends Game {
      */
     board = [];
 
-    constructor(message) {
-        super(message);
+    constructor(message, gameId) {
+        super(message, gameId);
         this.getIDs();
         this.isLoading = false;
 
@@ -55,11 +55,11 @@ module.exports = class TwoK48 extends Game {
 
         Phoenix.bot.on('messageReactionAdd', (messageReaction, user) => {
             // If the game is playing, let the player add reactions to move.
-            if (user.tag == this.player.tag && !this.isLoading && this.isPlaying)
+            if (user.tag == this.player.tag && !this.isLoading && this.isPlaying && messageReaction.message.id == this.boardMsg.id)
                 this.onPlay(this.emojiToMove(messageReaction.emoji.name));
         })
         Phoenix.bot.on('messageReactionRemove', (messageReaction, user) => {
-            if (user.tag == this.player.tag && !this.isLoading && this.isPlaying)
+            if (user.tag == this.player.tag && !this.isLoading && this.isPlaying && messageReaction.message.id == this.boardMsg.id)
                 this.onPlay(this.emojiToMove(messageReaction.emoji.name));
         })
     }
@@ -293,6 +293,7 @@ module.exports = class TwoK48 extends Game {
         this.channel.send(msg);
         this.isPlaying = false;
         Phoenix.activities--;
+        this.emit('end', this.gameId);
     }
 
     /**
