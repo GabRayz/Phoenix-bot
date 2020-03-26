@@ -38,6 +38,7 @@ module.exports = class Playlist extends Command {
                 break;
             case "play":
                 if (msg.args.length > 1) this.play(msg.args[1], msg);
+                msg.react('✅');
                 break;
             case "stop":
                 this.stop();
@@ -49,8 +50,8 @@ module.exports = class Playlist extends Command {
                 this.showHelp();
                 break
             case "see":
-                    if (msg.args.length > 1) this.see(msg.args[1]);
-                    break;
+                if (msg.args.length > 1) this.see(msg.args[1]);
+                break;
             default:
                 return;
         }
