@@ -36,6 +36,7 @@ module.exports = class Help extends Command {
             .addField(Phoenix.config.prefix + 'download [{audio|video} [url]]', "Télécharge la vidéo jouée, ou spécifiée en argument.")
             .addField(Phoenix.config.prefix + 'config', "Configurer le bot.")
             .addField(Phoenix.config.prefix + 'power4', "Jouer au puissance 4. `"+Phoenix.config.prefix+"power4 stop`")
+            .addField(Phoenix.config.prefix + 'radio', "Écouter France Info")
             .addBlankField()
         msg.channel.send(embed).catch(err => {
             if (err.message == 'Missing Permissions') {

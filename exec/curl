@@ -1,0 +1,10 @@
+curl 'https://icecast.radiofrance.fr/franceinfo-midfi.mp3' \
+-XGET \
+-H 'Accept: */*' \
+-H 'Connection: Keep-Alive' \
+-H 'Icy-Metadata: 1' \
+-H 'Accept-Language: fr-fr' \
+-H 'User-Agent: AppleCoreMedia/1.0.0.19E266 (Macintosh; U; Intel Mac OS X 10_15_4; fr_fr)' \
+-H 'Referer: https://embed.radiofrance.fr/franceinfo/player/direct' \
+-H 'Accept-Encoding: identity' \
+--output ./audio/franceinfo.mp3
