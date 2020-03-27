@@ -69,6 +69,7 @@ bot.on('message', (msg) => {
         let msgParts = msg.content.split(' ');
         let command = msgParts[0].slice(1);
         msg.args = msgParts.slice(1);
+        msg.command = command;
         ReadCommand(msg, command);
     }
 });

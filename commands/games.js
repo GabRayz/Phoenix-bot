@@ -10,7 +10,8 @@ module.exports = class Games extends Command {
     static name = 'games';
     static alias = [
         "games",
-        "game"
+        "game",
+        "2048"
     ];
     static description = "Jouer à des mini-jeux.";
 
@@ -20,9 +21,11 @@ module.exports = class Games extends Command {
     static currentGames = [];
 
     static async call(message, Phoenix) {
-        if (message.args.length == 0) {
-            console.log(this.currentGames);
-        }else if (message.args.length == 1) {
+        if (message.args.length == 0 && ['game', 'games'].includes(message.command))
+            this.displayScoreBoard(message.channel);
+        else if (message.args.length == 0)
+            this.startGame(message.command, message);
+        else if (message.args.length == 1) {
             this.startGame(message.args[0], message);
         }else if (message.args.length == 2) {
             if (message.args[1] == 'start')
@@ -30,6 +33,11 @@ module.exports = class Games extends Command {
             else if (message.args[1] == 'stop')
                 this.stopGame(message.args[0], message.author.tag);
         }
+    }
+
+    static displayScoreBoard(channel) {
+        channel.send('Liste des jeux: \n - 2048');
+        // TODO : display a scoreboard
     }
 
     static startGame(name, message) {
