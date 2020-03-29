@@ -63,16 +63,19 @@ Phoenix.sendClean = function(msg, channel, time = 20000) {
 }
 
 bot.on('message', (msg) => {
-    if (msg.content.startsWith(Phoenix.config.prefix)) {
+    if (checkPrefix(msg.content)) {
         console.log(msg.author.username + ' : ' + msg.content);
-        // let message = new Message(msg);
         let msgParts = msg.content.split(' ');
-        let command = msgParts[0].slice(1);
+        let command = msgParts[0].slice(Phoenix.config.prefix.length);
         msg.args = msgParts.slice(1);
         msg.command = command;
         ReadCommand(msg, command);
     }
 });
+
+function checkPrefix(message) {
+    return message.match('^' + Phoenix.config.prefix) != null;
+}
 
 function ReadCommand(message, command) {
     if(Phoenix.config.everyoneBlackListed && GetGuildMember(message.author).roles.length == 0) {
