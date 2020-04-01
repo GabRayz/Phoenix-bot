@@ -118,7 +118,6 @@ module.exports = class Play extends Command {
                 return;
             }
         }
-        // Get the stream
         console.log('Current queue: ', this.queue);
         let song = this.queue.shift();
         console.log('Next song: ', song);
@@ -148,7 +147,7 @@ module.exports = class Play extends Command {
             this.voiceHandlerOnEnd();
         }).catch(err => {
             console.error("Error while getting video infos: ", err);
-            this.textChannel.send('Erreur: ', err.message);
+            this.textChannel.send('Erreur: ' + err.message);
             return this.nextSong();
         })
     }
