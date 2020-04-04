@@ -73,8 +73,13 @@ bot.on('message', (msg) => {
     }
 });
 
+RegExp.escape= function(s) {
+    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+
 function checkPrefix(message) {
-    return message.match('^' + Phoenix.config.prefix) != null;
+    let regex = RegExp.escape(Phoenix.config.prefix);
+    return message.match('^' + regex) != null;
 }
 
 function ReadCommand(message, command) {
