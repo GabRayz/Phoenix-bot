@@ -56,9 +56,9 @@ module.exports = class Config extends Command {
     static getChannelIfFromName(name, guild) {
         // name: 'category/channel'
         let names = name.split('/');
-        let category = guild.channels.find(c => c.name == names[0]);
+        let category = guild.channels.find(c => c.name.toUpperCase() == names[0].toUpperCase());
         if (!category) return false;
-        let channel = guild.channels.find(c => c.name == names[1] && c.parentID == category.id);
+        let channel = guild.channels.find(c => c.name.toUpperCase() == names[1].toUpperCase() && c.parentID == category.id);
         return channel ? channel.id : false;
     }
 
