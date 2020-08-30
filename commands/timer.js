@@ -18,7 +18,9 @@ module.exports = class Timer extends Command {
     }
 
     static setTimer(duration, message) {
-        console.log(duration);
+        if (!duration > 0) return;
+        console.log("Timer set :", duration);
+        message.react('🕐');
         setTimeout(() => {
             message.reply('Driiiiing !');
         }, duration);

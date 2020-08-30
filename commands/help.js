@@ -38,6 +38,7 @@ module.exports = class Help extends Command {
             .addField(Phoenix.config.prefix + 'power4', "Jouer au puissance 4. `"+Phoenix.config.prefix+"power4 stop`")
             .addField(Phoenix.config.prefix + 'games', "Jouer à des jeux. (en développement)")
             .addField(Phoenix.config.prefix + 'radio', "Écouter France Info")
+            .addField(Phoenix.config.prefix + 'timer {nombre} {s|m|h}', "Programmer un minuteur")
             .addBlankField()
         msg.channel.send(embed).catch(err => {
             if (err.message == 'Missing Permissions') {
