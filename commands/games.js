@@ -1,7 +1,9 @@
 let Command = require('../src/Command');
+let fs = require('fs');
 let games = {
     TwoK48: require('./2048.js')
 }
+let {RichEmbed} = require('discord.js');
 
 module.exports = class Games extends Command {
     constructor(author) {
@@ -14,6 +16,7 @@ module.exports = class Games extends Command {
         "2048"
     ];
     static description = "Jouer à des mini-jeux.";
+    static scoreboard;
 
     /**
      * List of currently playing instances of games
@@ -21,6 +24,7 @@ module.exports = class Games extends Command {
     static currentGames = [];
 
     static async call(message, Phoenix) {
+        await this.loadScoreboard();
         if (message.args.length == 0 && ['game', 'games'].includes(message.command))
             this.displayScoreBoard(message.channel);
         else if (message.args.length == 0)
@@ -35,9 +39,24 @@ module.exports = class Games extends Command {
         }
     }
 
+    static addScore(game, tag, score) {
+        
+    }
+
     static displayScoreBoard(channel) {
-        channel.send('Liste des jeux: \n - 2048');
-        // TODO : display a scoreboard
+        let description = '';
+        Object.keys(this.scoreboard).forEach(game => {
+            description += '**' + game + ' : **\n';
+            for (let i = 0; i < 5 && i < this.scoreboard[game].length; i++) {
+                let player = this.scoreboard[game][i];
+                description += '#' + (i + 1) + ' ' + player.tag + ' : ' + player.score + '\n';
+            }
+        })
+        let embed = new RichEmbed();
+        embed.setTitle('Scoreboard')
+            .setDescription(description)
+            .setColor('ORANGE');
+        channel.send(embed);
     }
 
     static startGame(name, message) {
@@ -76,5 +95,38 @@ module.exports = class Games extends Command {
         let index = Games.currentGames.findIndex(game => game && game.gameId == gameId);
         if (index >= 0)
             Games.currentGames[index] = null;
+    }
+
+    /**
+     * Loads the scoreboard from the file. Creates the file if it does not exist.
+     */
+    static loadScoreboard() {
+        return new Promise((resolve, reject) => {
+            fs.access('./src/games/scoreboard.json', fs.constants.F_ok, err => {
+                if (err) {
+                    let scoreboard = {
+                        "2048": [],
+                        power4: []
+                    }
+                    this.scoreboard = scoreboard;
+                    resolve();
+                }else {
+                    let scoreboard = {};
+                    scoreboard = require('../src/games/scoreboard.json');
+                    this.scoreboard = scoreboard;
+                    resolve();
+                }
+            });
+        })
+    }
+
+    static saveScoreboard() {
+        fs.writeFile('./src/games/scoreboard.json', JSON.stringify(this.scoreboard, null, 4), (err) => {
+            if (err) {
+                console.error('Error while saving scoreboard: ', err);
+                return reject(err);
+            }
+            else return resolve();
+        });
     }
 }
