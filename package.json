@@ -1,6 +1,6 @@
 {
   "name": "phoenix-bot",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "Bot for Discord app",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "googleapis": "^42.0.0",
     "help": "^3.0.2",
     "http": "0.0.0",
-    "m3u8stream": "^0.6.4",
+    "m3u8stream": "^0.7.1",
     "node.js": "0.0.0",
     "opusscript": "0.0.7",
     "parse-time": "^0.1.4",
@@ -36,6 +36,6 @@
     "request": "^2.88.0",
     "send": "^0.17.1",
     "socket.io": "^2.3.0",
-    "ytdl-core": "^1.0.7"
+    "ytdl-core": "^3.2.2"
   }
 }

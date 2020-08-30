@@ -156,7 +156,7 @@ module.exports = class Play extends Command {
         this.voiceHandler.on('start', () => {
             console.log('Playing...');
             if (typeof this.videoInfos != 'undefined')
-                this.Phoenix.bot.user.setActivity(this.videoInfos.title);
+                this.Phoenix.bot.user.setActivity(this.videoInfos.videoDetails.title);
         })
     }
 
@@ -272,30 +272,27 @@ module.exports = class Play extends Command {
         }
     }
 
-    static getStream(url) {
-        return new Promise((resolve, reject) => {
-            if (typeof url == 'undefined') return reject(new TypeError('url is not defined'));
-            console.log('Get stream from url : ' + url);
-            youtube.getInfo(url, (err, infos) => {
-                if (err) {
-                    return reject(err);
-                }
-                this.videoInfos = infos;
-                this.videoUrl = url;
-                let stream = youtube(url, {
-                    filter: "audioonly",
-                    highWaterMark: 1<<25
-                });
+    static async getStream(url) {
+        if (typeof url == 'undefined') return reject(new TypeError('url is not defined'));
+        console.log('Get stream from url : ' + url);
+        let infos = await youtube.getInfo(url);
+        if (! infos) {
+            return null;
+        }
+        this.videoInfos = infos;
+        this.videoUrl = url;
+        let stream = youtube(url, {
+            filter: "audioonly",
+            highWaterMark: 1<<25
+        });
 
-                stream.on('error', (err) => {
-                    console.error("Erreur lors de la lecture : ", err);
-                    this.textChannel.send("Erreur: " + err.message);
-                    // this.voiceHandler.end();
-                })
-                // console.log(stream);
-                return resolve(stream);
-            })
+        stream.on('error', (err) => {
+            console.error("Erreur lors de la lecture : ", err);
+            this.textChannel.send("Erreur: " + err.message);
+            // this.voiceHandler.end();
         })
+        // console.log(stream);
+        return stream;
     }
 
     static getUrlFromName(name, Phoenix) {
