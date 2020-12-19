@@ -1,6 +1,6 @@
 {
   "name": "phoenix-bot",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "Bot for Discord app",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/GabRayz/Phoenix-bot2#readme",
   "dependencies": {
-    "discord.js": "^11.5.1",
+    "discord.js": "^11.6.4",
     "express": "^4.17.1",
     "ffmpeg": "0.0.4",
     "fluent-ffmpeg": "^2.1.2",
